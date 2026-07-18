@@ -4,6 +4,7 @@ import com.retailinventory.retailinventorysystem.entity.Category;
 import com.retailinventory.retailinventorysystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,12 +26,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public Category createCategory(@Valid@RequestBody Category category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category updatedCategory) {
+    public Category updateCategory(@PathVariable Long id, @Valid@RequestBody Category updatedCategory) {
         return categoryService.updateCategory(id, updatedCategory);
     }
 

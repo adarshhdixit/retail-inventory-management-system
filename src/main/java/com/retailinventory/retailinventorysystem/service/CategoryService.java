@@ -4,6 +4,7 @@ import com.retailinventory.retailinventorysystem.entity.Category;
 import com.retailinventory.retailinventorysystem.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.retailinventory.retailinventorysystem.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id " + id));
     }
 
     public Category createCategory(Category category) {
