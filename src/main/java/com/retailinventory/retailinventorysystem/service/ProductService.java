@@ -18,6 +18,15 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<Product> getLowStockProducts(Integer threshold) {
+        return productRepository.findByQuantityLessThan(threshold);
+    }
+    public List<Product> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId);
+    }
+    public List<Product> searchProductsByName(String keyword) {
+        return productRepository.findByNameContainingIgnoreCase(keyword);
+    }
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));

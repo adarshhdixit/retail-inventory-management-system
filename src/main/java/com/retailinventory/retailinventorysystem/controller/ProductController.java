@@ -20,9 +20,22 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/low-stock")
+    public List<Product> getLowStockProducts(@RequestParam(defaultValue = "10") Integer threshold) {
+        return productService.getLowStockProducts(threshold);
+    }
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
+    }
+
+    @GetMapping("/by-category/{categoryId}")
+    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
+        return productService.getProductsByCategory(categoryId);
+    }
+    @GetMapping("/search")
+    public List<Product> searchProducts(@RequestParam String keyword) {
+        return productService.searchProductsByName(keyword);
     }
 
     @PostMapping
