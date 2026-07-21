@@ -1,0 +1,17 @@
+Categories IDs-
+
+"id": 6,
+"name": "Art & Craft",
+"description": "Colors, sketch pens, glue, and craft materials"
+
+"id": 7,
+"name": "Notebooks & Paper",
+"description": "Notebooks, diaries, loose sheets, and registers"
+
+"id": 8,
+"name": "Writing Instruments",
+"description": "Pens, pencils, markers, and highlighters"
+
+"id": 10,
+"name": "Office Supplies",
+"description": "Staplers, clips, tape, and desk organizers"

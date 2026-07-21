@@ -1,5 +1,6 @@
 package com.retailinventory.retailinventorysystem.service;
 
+import com.retailinventory.retailinventorysystem.dto.SaleResponseDTO;
 import com.retailinventory.retailinventorysystem.entity.Product;
 import com.retailinventory.retailinventorysystem.entity.Sale;
 import com.retailinventory.retailinventorysystem.exception.ResourceNotFoundException;
@@ -10,10 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SaleService {
@@ -24,13 +26,51 @@ public class SaleService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Sale> getAllSales() {
-        return saleRepository.findAll();
+    private SaleResponseDTO convertToDTO(Sale sale) {
+        SaleResponseDTO dto = new SaleResponseDTO();
+        dto.setId(sale.getId());
+        dto.setProductName(sale.getProduct().getName());
+        dto.setQuantitySold(sale.getQuantitySold());
+        dto.setTotalAmount(sale.getProduct().getPrice() * sale.getQuantitySold());
+        dto.setSaleDate(sale.getSaleDate());
+        return dto;
     }
 
-    public Sale getSaleById(Long id) {
-        return saleRepository.findById(id)
+    public List<SaleResponseDTO> getAllSales() {
+        return saleRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public SaleResponseDTO getSaleById(Long id) {
+        Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sale not found with id " + id));
+        return convertToDTO(sale);
+    }
+
+    @Transactional
+    public SaleResponseDTO createSale(Sale sale) {
+        Long productId = sale.getProduct().getId();
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productId));
+
+        if (product.getQuantity() < sale.getQuantitySold()) {
+            throw new IllegalArgumentException(
+                    "Not enough stock for " + product.getName() +
+                            ". Available: " + product.getQuantity() +
+                            ", Requested: " + sale.getQuantitySold());
+        }
+
+        product.setQuantity(product.getQuantity() - sale.getQuantitySold());
+        productRepository.save(product);
+
+        sale.setProduct(product);
+        sale.setSaleDate(LocalDateTime.now());
+
+        Sale savedSale = saleRepository.save(sale);
+        return convertToDTO(savedSale);
     }
 
     public Map<String, Object> getSalesSummary() {
@@ -51,6 +91,7 @@ public class SaleService {
 
         return summary;
     }
+
     public List<Map<String, Object>> getTopSellingProducts() {
         List<Sale> allSales = saleRepository.findAll();
 
@@ -77,28 +118,5 @@ public class SaleService {
         result.sort((a, b) -> (int) b.get("totalUnitsSold") - (int) a.get("totalUnitsSold"));
 
         return result;
-    }
-
-    @Transactional
-    public Sale createSale(Sale sale) {
-        Long productId = sale.getProduct().getId();
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + productId));
-
-        if (product.getQuantity() < sale.getQuantitySold()) {
-            throw new IllegalArgumentException(
-                    "Not enough stock for " + product.getName() +
-                            ". Available: " + product.getQuantity() +
-                            ", Requested: " + sale.getQuantitySold());
-        }
-
-        product.setQuantity(product.getQuantity() - sale.getQuantitySold());
-        productRepository.save(product);
-
-        sale.setProduct(product);
-        sale.setSaleDate(LocalDateTime.now());
-
-        return saleRepository.save(sale);
     }
 }

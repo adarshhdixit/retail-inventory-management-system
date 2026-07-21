@@ -1,5 +1,6 @@
 package com.retailinventory.retailinventorysystem.service;
 
+import com.retailinventory.retailinventorysystem.dto.PurchaseResponseDTO;
 import com.retailinventory.retailinventorysystem.entity.Product;
 import com.retailinventory.retailinventorysystem.entity.Purchase;
 import com.retailinventory.retailinventorysystem.entity.Supplier;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseService {
@@ -26,17 +28,32 @@ public class PurchaseService {
     @Autowired
     private SupplierRepository supplierRepository;
 
-    public List<Purchase> getAllPurchases() {
-        return purchaseRepository.findAll();
+    private PurchaseResponseDTO convertToDTO(Purchase purchase) {
+        PurchaseResponseDTO dto = new PurchaseResponseDTO();
+        dto.setId(purchase.getId());
+        dto.setProductName(purchase.getProduct().getName());
+        dto.setSupplierName(purchase.getSupplier().getName());
+        dto.setQuantityPurchased(purchase.getQuantityPurchased());
+        dto.setTotalCost(purchase.getTotalCost());
+        dto.setPurchaseDate(purchase.getPurchaseDate());
+        return dto;
     }
 
-    public Purchase getPurchaseById(Long id) {
-        return purchaseRepository.findById(id)
+    public List<PurchaseResponseDTO> getAllPurchases() {
+        return purchaseRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public PurchaseResponseDTO getPurchaseById(Long id) {
+        Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id " + id));
+        return convertToDTO(purchase);
     }
 
     @Transactional
-    public Purchase createPurchase(Purchase purchase) {
+    public PurchaseResponseDTO createPurchase(Purchase purchase) {
         Long productId = purchase.getProduct().getId();
         Long supplierId = purchase.getSupplier().getId();
 
@@ -53,6 +70,7 @@ public class PurchaseService {
         purchase.setSupplier(supplier);
         purchase.setPurchaseDate(LocalDateTime.now());
 
-        return purchaseRepository.save(purchase);
+        Purchase savedPurchase = purchaseRepository.save(purchase);
+        return convertToDTO(savedPurchase);
     }
 }

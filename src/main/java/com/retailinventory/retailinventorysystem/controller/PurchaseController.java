@@ -1,5 +1,6 @@
 package com.retailinventory.retailinventorysystem.controller;
 
+import com.retailinventory.retailinventorysystem.dto.PurchaseResponseDTO;
 import com.retailinventory.retailinventorysystem.entity.Purchase;
 import com.retailinventory.retailinventorysystem.service.PurchaseService;
 import jakarta.validation.Valid;
@@ -16,17 +17,17 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
     @GetMapping
-    public List<Purchase> getAllPurchases() {
+    public List<PurchaseResponseDTO> getAllPurchases() {
         return purchaseService.getAllPurchases();
     }
 
     @GetMapping("/{id}")
-    public Purchase getPurchaseById(@PathVariable Long id) {
+    public PurchaseResponseDTO getPurchaseById(@PathVariable Long id) {
         return purchaseService.getPurchaseById(id);
     }
 
     @PostMapping
-    public Purchase createPurchase(@Valid @RequestBody Purchase purchase) {
+    public PurchaseResponseDTO createPurchase(@Valid @RequestBody Purchase purchase) {
         return purchaseService.createPurchase(purchase);
     }
 }
