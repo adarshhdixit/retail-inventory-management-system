@@ -7,6 +7,7 @@ import com.retailinventory.retailinventorysystem.repository.ProductRepository;
 import com.retailinventory.retailinventorysystem.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,6 +79,7 @@ public class SaleService {
         return result;
     }
 
+    @Transactional
     public Sale createSale(Sale sale) {
         Long productId = sale.getProduct().getId();
 

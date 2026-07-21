@@ -5,6 +5,9 @@ import com.retailinventory.retailinventorysystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -16,13 +19,22 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public Page<Product> getAllProducts(
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "id"
+            ) Pageable pageable) {
+
+        return productService.getAllProducts(pageable);
     }
 
     @GetMapping("/low-stock")
-    public List<Product> getLowStockProducts(@RequestParam(defaultValue = "10") Integer threshold) {
-        return productService.getLowStockProducts(threshold);
+    public Page<Product> getLowStockProducts(
+            @RequestParam(defaultValue = "10") Integer threshold,
+            Pageable pageable) {
+
+        return productService.getLowStockProducts(threshold, pageable);
     }
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable Long id) {
@@ -30,12 +42,16 @@ public class ProductController {
     }
 
     @GetMapping("/by-category/{categoryId}")
-    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
-        return productService.getProductsByCategory(categoryId);
+    public Page<Product> getProductsByCategory(
+            @PathVariable Long categoryId,
+            Pageable pageable) {
+
+        return productService.getProductsByCategory(categoryId, pageable);
     }
     @GetMapping("/search")
-    public List<Product> searchProducts(@RequestParam String keyword) {
-        return productService.searchProductsByName(keyword);
+    public Page<Product> searchProducts(@RequestParam String keyword, Pageable pageable) {
+
+        return productService.searchProductsByName(keyword, pageable);
     }
 
     @PostMapping

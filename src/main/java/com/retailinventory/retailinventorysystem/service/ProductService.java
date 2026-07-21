@@ -5,6 +5,9 @@ import com.retailinventory.retailinventorysystem.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.retailinventory.retailinventorysystem.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -14,18 +17,19 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
-    public List<Product> getLowStockProducts(Integer threshold) {
-        return productRepository.findByQuantityLessThan(threshold);
+    public Page<Product> getLowStockProducts(Integer threshold, Pageable pageable) {
+        return productRepository.findByQuantityLessThan(threshold, pageable);
     }
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+    public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
+        return productRepository.findByCategoryId(categoryId, pageable);
     }
-    public List<Product> searchProductsByName(String keyword) {
-        return productRepository.findByNameContainingIgnoreCase(keyword);
+    public Page<Product> searchProductsByName(String keyword, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
     }
     public Product getProductById(Long id) {
         return productRepository.findById(id)
