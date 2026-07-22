@@ -6,10 +6,12 @@ import com.retailinventory.retailinventorysystem.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "6. Sales", description = "Record sales, view revenue and top-selling product analytics")
 @RestController
 @RequestMapping("/api/sales")
 public class SaleController {

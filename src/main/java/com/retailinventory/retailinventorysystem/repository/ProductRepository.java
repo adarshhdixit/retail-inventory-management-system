@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByQuantityLessThan(Integer threshold, Pageable pageable);
+    long countByQuantityLessThan(Integer threshold);
 
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 

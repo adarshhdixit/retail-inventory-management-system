@@ -5,9 +5,11 @@ import com.retailinventory.retailinventorysystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
+@Tag(name = "3. Categories", description = "Manage product categories")
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
