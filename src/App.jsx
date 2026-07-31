@@ -21,10 +21,17 @@ function App() {
       <CartProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            {/* Public storefront — default landing */}
+            <Route path="/" element={<StoreHome />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/account" element={<CustomerAuth />} />
 
+            {/* Admin — clearly separated under /admin */}
+            <Route path="/admin/login" element={<Login />} />
             <Route
-              path="/dashboard"
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard />
@@ -32,7 +39,7 @@ function App() {
               }
             />
             <Route
-              path="/categories"
+              path="/admin/categories"
               element={
                 <ProtectedRoute>
                   <Categories />
@@ -40,7 +47,7 @@ function App() {
               }
             />
             <Route
-              path="/products"
+              path="/admin/products"
               element={
                 <ProtectedRoute>
                   <Products />
@@ -48,7 +55,7 @@ function App() {
               }
             />
             <Route
-              path="/suppliers"
+              path="/admin/suppliers"
               element={
                 <ProtectedRoute>
                   <Suppliers />
@@ -56,7 +63,7 @@ function App() {
               }
             />
             <Route
-              path="/purchases"
+              path="/admin/purchases"
               element={
                 <ProtectedRoute>
                   <Purchases />
@@ -64,7 +71,7 @@ function App() {
               }
             />
             <Route
-              path="/sales"
+              path="/admin/sales"
               element={
                 <ProtectedRoute>
                   <Sales />
@@ -72,14 +79,7 @@ function App() {
               }
             />
 
-            {/* Public storefront routes — no login required */}
-            <Route path="/store" element={<StoreHome />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/account" element={<CustomerAuth />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

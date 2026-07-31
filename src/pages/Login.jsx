@@ -20,7 +20,7 @@ export default function Login() {
         password,
       });
       login(response.data.token);
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (err) {
       setError("Invalid username or password");
     }
