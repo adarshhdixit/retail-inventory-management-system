@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d0b0e9f4-7464-4454-82ca-38ce717acbee" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../../../../../.env.production" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../HELP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../eslint.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../public/favicon.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../public/icons.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/App.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/App.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/api/axiosInstance.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/assets/hero.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/assets/react.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/assets/vite.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/components/AccountMenu.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/components/ConfirmDialog.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/components/Layout.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/components/Modal.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/components/ProtectedRoute.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/context/AuthContext.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/context/CartContext.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/DataSeeder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/RetailInventorySystemApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/AuthRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/AuthResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/JwtAuthFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/JwtUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/OpenApiConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/config/ShopConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/CategoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/DashboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/OrderController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/ProductController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/PurchaseController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/SaleController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/controller/SupplierController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/DashboardResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/OrderItemRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/OrderRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/OrderResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/PaymentConfirmDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/ProductResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/PurchaseResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/SaleResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/SendOtpRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/dto/VerifyOtpRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Category.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Order.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/OrderItem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/OrderStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/OtpVerification.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Product.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Purchase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Sale.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/Supplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/entity/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/exception/ResourceNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/notes.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/CategoryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/OrderItemRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/OrderRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/OtpRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/ProductRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/PurchaseRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/SaleRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/SupplierRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/CategoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/CustomUserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/DashboardService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/OrderService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/OtpService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/ProductService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/PurchaseService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/RazorpayService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/SaleService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/service/SupplierService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/java/com/retailinventory/retailinventorysystem/util/DistanceUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Cart.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Categories.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Checkout.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/CustomerAuth.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Dashboard.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Login.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/ProductDetail.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Products.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Purchases.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Sales.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/StoreHome.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/pages/Suppliers.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/RetailInventorySystemApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/service/CategoryServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/service/ProductServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/service/PurchaseServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/service/SaleServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/test/java/com/retailinventory/retailinventorysystem/service/SupplierServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../src/utils/locationCheck.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../vercel.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../vite.config.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../../.." />
+  </component>
+  <component name="ProjectId" id="3HHTYXL3XaSK8reBB6uLrdBkbrB" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Projects/first/dxt-app/backend/src/main/java/com/retailinventory/retailinventorysystem"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d0b0e9f4-7464-4454-82ca-38ce717acbee" name="Changes" comment="" />
+      <created>1785524042893</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1785524042893</updated>
+    </task>
+    <servers />
+  </component>
+</project>
