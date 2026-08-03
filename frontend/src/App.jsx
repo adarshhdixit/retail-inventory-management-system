@@ -14,6 +14,8 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import CustomerAuth from "./pages/CustomerAuth";
 import ProductDetail from "./pages/ProductDetail";
+import MyOrders from './pages/MyOrders';
+import Orders from './pages/Orders';
 
 function App() {
   return (
@@ -78,7 +80,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/admin/orders"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/my-orders" element={<MyOrders />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

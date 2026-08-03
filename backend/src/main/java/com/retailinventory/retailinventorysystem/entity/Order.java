@@ -36,6 +36,8 @@ public class Order {
     private Double customerLongitude;
     private String phone;
 
+    private String deliveryPersonName;
+
     private String razorpayOrderId;
     private String razorpayPaymentId;
     private String razorpaySignature;

@@ -60,7 +60,13 @@ function AccountMenu() {
             <p className="text-xs text-gray-500">{user?.phone}</p>
           </div>
 
-          {/* Room to add more items later, e.g. My Orders, Addresses */}
+          <Link
+            to="/my-orders"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            My Orders
+          </Link>
 
           <button
             onClick={handleLogout}

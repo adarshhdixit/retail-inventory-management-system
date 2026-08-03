@@ -10,6 +10,7 @@ import com.retailinventory.retailinventorysystem.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -47,6 +48,22 @@ public class OrderController {
             return "OUT_OF_RANGE";
         }
         return "DELIVERABLE";
+    }
+    @PatchMapping("/{id}/status")
+    public OrderResponseDTO updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam com.retailinventory.retailinventorysystem.entity.OrderStatus status,
+            @RequestParam(required = false) String deliveryPersonName) {
+        return orderService.updateOrderStatus(id, status, deliveryPersonName);
+    }
+    @GetMapping("/my-orders")
+    public List<OrderResponseDTO> getMyOrders(Authentication authentication) {
+        Long customerId = getCustomerIdFromAuth(authentication);
+        return orderService.getOrdersForCustomer(customerId);
+    }
+    @GetMapping
+    public List<OrderResponseDTO> getAllOrders() {
+        return orderService.getAllOrders();
     }
 
     private Long getCustomerIdFromAuth(Authentication authentication) {

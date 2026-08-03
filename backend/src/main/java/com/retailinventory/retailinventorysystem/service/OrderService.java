@@ -11,6 +11,7 @@ import com.retailinventory.retailinventorysystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.retailinventory.retailinventorysystem.dto.OrderItemResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,5 +120,107 @@ public class OrderService {
         }
 
         orderRepository.save(order);
+    }
+    public List<OrderResponseDTO> getOrdersForCustomer(Long customerId) {
+        List<Order> orders = orderRepository.findByCustomerId(customerId);
+        List<OrderResponseDTO> response = new ArrayList<>();
+
+        for (Order order : orders) {
+            OrderResponseDTO dto = new OrderResponseDTO();
+            dto.setId(order.getId());
+            dto.setTotalAmount(order.getTotalAmount());
+            dto.setStatus(order.getStatus().name());
+            dto.setRazorpayOrderId(order.getRazorpayOrderId());
+            dto.setCreatedAt(order.getCreatedAt());
+            dto.setShippingAddress(order.getShippingAddress());
+            dto.setCustomerName(order.getCustomer().getName());
+            dto.setPhone(order.getPhone());
+            dto.setDeliveryPersonName(order.getDeliveryPersonName());
+
+            List<OrderItemResponseDTO> itemDtos = new ArrayList<>();
+            for (OrderItem item : order.getItems()) {
+                OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
+                itemDto.setProductName(item.getProduct().getName());
+                itemDto.setQuantity(item.getQuantity());
+                itemDto.setPriceAtPurchase(item.getPriceAtPurchase());
+                itemDtos.add(itemDto);
+            }
+            dto.setItems(itemDtos);
+
+            response.add(dto);
+        }
+
+        return response;
+    }
+    @Transactional
+    public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus newStatus, String deliveryPersonName) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        validateStatusTransition(order.getStatus(), newStatus);
+
+        order.setStatus(newStatus);
+
+        if (deliveryPersonName != null && !deliveryPersonName.isBlank()) {
+            order.setDeliveryPersonName(deliveryPersonName);
+        }
+
+        Order saved = orderRepository.save(order);
+
+        OrderResponseDTO response = new OrderResponseDTO();
+        response.setId(saved.getId());
+        response.setTotalAmount(saved.getTotalAmount());
+        response.setStatus(saved.getStatus().name());
+        response.setRazorpayOrderId(saved.getRazorpayOrderId());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setDeliveryPersonName(saved.getDeliveryPersonName());
+        return response;
+    }
+
+    private void validateStatusTransition(OrderStatus current, OrderStatus next) {
+        boolean allowed = switch (current) {
+            case PENDING -> next == OrderStatus.PAID || next == OrderStatus.CANCELLED;
+            case PAID -> next == OrderStatus.OUT_FOR_DELIVERY || next == OrderStatus.CANCELLED;
+            case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED;
+            case DELIVERED, CANCELLED -> false; // terminal states, no further transitions
+        };
+
+        if (!allowed) {
+            throw new IllegalArgumentException(
+                    "Cannot change order status from " + current + " to " + next
+            );
+        }
+    }
+    public List<OrderResponseDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        List<OrderResponseDTO> response = new ArrayList<>();
+
+        for (Order order : orders) {
+            OrderResponseDTO dto = new OrderResponseDTO();
+            dto.setId(order.getId());
+            dto.setTotalAmount(order.getTotalAmount());
+            dto.setStatus(order.getStatus().name());
+            dto.setRazorpayOrderId(order.getRazorpayOrderId());
+            dto.setCreatedAt(order.getCreatedAt());
+            dto.setShippingAddress(order.getShippingAddress());
+            dto.setCustomerName(order.getCustomer().getName());
+            dto.setPhone(order.getPhone());
+            dto.setDeliveryPersonName(order.getDeliveryPersonName());
+
+
+            List<OrderItemResponseDTO> itemDtos = new ArrayList<>();
+            for (OrderItem item : order.getItems()) {
+                OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
+                itemDto.setProductName(item.getProduct().getName());
+                itemDto.setQuantity(item.getQuantity());
+                itemDto.setPriceAtPurchase(item.getPriceAtPurchase());
+                itemDtos.add(itemDto);
+            }
+            dto.setItems(itemDtos);
+
+            response.add(dto);
+        }
+
+        return response;
     }
 }
