@@ -68,6 +68,11 @@ public class AuthController {
                     return userRepository.save(newUser);
                 });
 
+        if ((user.getName() == null || user.getName().isBlank()) && request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName());
+            userRepository.save(user);
+        }
+
         String token = jwtUtil.generateToken(user.getUsername());
         return new AuthResponse(token);
     }

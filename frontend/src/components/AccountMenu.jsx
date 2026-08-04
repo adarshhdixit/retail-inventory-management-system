@@ -67,6 +67,13 @@ function AccountMenu() {
           >
             My Orders
           </Link>
+          <Link
+            to="/addresses"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            My Addresses
+          </Link>
 
           <button
             onClick={handleLogout}

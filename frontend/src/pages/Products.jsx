@@ -108,10 +108,10 @@ export default function Products() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Products</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink">Products</h1>
         <button
           onClick={openCreateModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-brass hover:bg-brass-dark text-white px-4 py-2 rounded-sm text-sm transition"
         >
           + Add Product
         </button>
@@ -125,51 +125,51 @@ export default function Products() {
           setSearch(e.target.value);
           setPage(0);
         }}
-        className="w-full max-w-sm border border-slate-300 rounded-md px-3 py-2 mb-4"
+        className="w-full max-w-sm border border-ledger-line bg-white rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
       />
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">
+        <div className="bg-stamp/10 text-stamp p-3 rounded-sm mb-4 text-sm">
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-sm border border-ledger-line overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-slate-100 text-slate-600 text-sm">
+          <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
             <tr>
-              <th className="p-3">Name</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Supplier</th>
-              <th className="p-3">Price</th>
-              <th className="p-3">Quantity</th>
-              <th className="p-3 w-32">Actions</th>
+              <th className="p-3 font-semibold">Name</th>
+              <th className="p-3 font-semibold">Category</th>
+              <th className="p-3 font-semibold">Supplier</th>
+              <th className="p-3 font-semibold">Price</th>
+              <th className="p-3 font-semibold">Quantity</th>
+              <th className="p-3 font-semibold w-32">Actions</th>
             </tr>
           </thead>
           <tbody>
             {products.map((p) => (
-              <tr key={p.id} className="border-t border-slate-100">
-                <td className="p-3">{p.name}</td>
-                <td className="p-3 text-slate-500">{p.categoryName}</td>
-                <td className="p-3 text-slate-500">{p.supplierName}</td>
-                <td className="p-3">₹{p.price}</td>
+              <tr key={p.id} className="border-t border-ledger-line">
+                <td className="p-3 text-ink text-sm">{p.name}</td>
+                <td className="p-3 text-slate-text text-sm">{p.categoryName}</td>
+                <td className="p-3 text-slate-text text-sm">{p.supplierName}</td>
+                <td className="p-3 font-mono text-sm text-ink">₹{p.price}</td>
                 <td
-                  className={`p-3 ${
-                    p.quantity < 10 ? "text-red-600 font-semibold" : ""
+                  className={`p-3 font-mono text-sm ${
+                    p.quantity < 10 ? "text-stamp font-semibold" : "text-ink"
                   }`}
                 >
                   {p.quantity}
                 </td>
-                <td className="p-3 flex gap-2">
+                <td className="p-3 flex gap-3">
                   <button
                     onClick={() => openEditModal(p)}
-                    className="text-blue-600 hover:underline text-sm"
+                    className="text-brass-dark hover:underline text-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => setDeleteId(p.id)}
-                    className="text-red-600 hover:underline text-sm"
+                    className="text-stamp hover:underline text-sm"
                   >
                     Delete
                   </button>
@@ -180,21 +180,21 @@ export default function Products() {
         </table>
       </div>
 
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center items-center gap-3 mt-5">
         <button
           disabled={page === 0}
           onClick={() => setPage(page - 1)}
-          className="px-3 py-1 rounded-md bg-slate-200 disabled:opacity-50"
+          className="px-3 py-1 rounded-sm border border-ledger-line text-sm text-ink disabled:opacity-40 hover:border-brass transition"
         >
           Prev
         </button>
-        <span className="px-3 py-1 text-slate-600">
+        <span className="text-slate-text text-sm">
           Page {page + 1} of {totalPages || 1}
         </span>
         <button
           disabled={page + 1 >= totalPages}
           onClick={() => setPage(page + 1)}
-          className="px-3 py-1 rounded-md bg-slate-200 disabled:opacity-50"
+          className="px-3 py-1 rounded-sm border border-ledger-line text-sm text-ink disabled:opacity-40 hover:border-brass transition"
         >
           Next
         </button>
@@ -206,57 +206,43 @@ export default function Products() {
         title={editingId ? "Edit Product" : "Add Product"}
       >
         <form onSubmit={handleSubmit}>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Name
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Name</label>
           <input
             type="text"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           />
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Description</label>
           <input
             type="text"
             value={form.description}
-            onChange={(e) =>
-              setForm({ ...form, description: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
           />
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Price
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Price</label>
           <input
             type="number"
             step="0.01"
             value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           />
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Quantity
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Quantity</label>
           <input
             type="number"
             value={form.quantity}
             onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           />
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Category
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Category</label>
           <select
             value={form.categoryId}
-            onChange={(e) =>
-              setForm({ ...form, categoryId: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
           >
             <option value="">-- Select --</option>
             {categories.map((c) => (
@@ -265,15 +251,11 @@ export default function Products() {
               </option>
             ))}
           </select>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Supplier
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Supplier</label>
           <select
             value={form.supplierId}
-            onChange={(e) =>
-              setForm({ ...form, supplierId: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-6"
+            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-6 text-sm focus:outline-none focus:border-brass"
           >
             <option value="">-- Select --</option>
             {suppliers.map((s) => (
@@ -284,7 +266,7 @@ export default function Products() {
           </select>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-brass hover:bg-brass-dark text-white py-2 rounded-sm text-sm transition"
           >
             Save
           </button>

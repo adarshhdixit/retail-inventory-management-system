@@ -1,1 +1,18 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@theme {
+  --font-display: "Poppins", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-ink: #2E3A8C;
+  --color-ledger: #FFFFFF;
+  --color-ledger-line: #E2E8F0;
+  --color-brass: #2563EB;
+  --color-brass-dark: #1D4ED8;
+  --color-sage: #16A34A;
+  --color-stamp: #EF4444;
+  --color-slate-text: #64748B;
+  --color-accent: #22D3EE;
+}

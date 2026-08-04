@@ -61,34 +61,34 @@ export default function Purchases() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Purchases</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink">Purchases</h1>
         <button
           onClick={openCreateModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-brass hover:bg-brass-dark text-white px-4 py-2 rounded-sm text-sm transition"
         >
           + Record Purchase
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-sm border border-ledger-line overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-slate-100 text-slate-600 text-sm">
+          <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
             <tr>
-              <th className="p-3">Product</th>
-              <th className="p-3">Supplier</th>
-              <th className="p-3">Quantity</th>
-              <th className="p-3">Cost</th>
-              <th className="p-3">Date</th>
+              <th className="p-3 font-semibold">Product</th>
+              <th className="p-3 font-semibold">Supplier</th>
+              <th className="p-3 font-semibold">Quantity</th>
+              <th className="p-3 font-semibold">Cost</th>
+              <th className="p-3 font-semibold">Date</th>
             </tr>
           </thead>
           <tbody>
             {purchases.map((p) => (
-              <tr key={p.id} className="border-t border-slate-100">
-                <td className="p-3">{p.productName}</td>
-                <td className="p-3">{p.supplierName}</td>
-                <td className="p-3">{p.quantityPurchased}</td>
-                <td className="p-3">₹{p.totalCost.toFixed(2)}</td>
-                <td className="p-3 text-slate-500">
+              <tr key={p.id} className="border-t border-ledger-line">
+                <td className="p-3 text-ink text-sm">{p.productName}</td>
+                <td className="p-3 text-slate-text text-sm">{p.supplierName}</td>
+                <td className="p-3 font-mono text-sm text-ink">{p.quantityPurchased}</td>
+                <td className="p-3 font-mono text-sm text-ink">₹{p.totalCost.toFixed(2)}</td>
+                <td className="p-3 text-slate-text text-sm">
                   {new Date(p.purchaseDate).toLocaleString()}
                 </td>
               </tr>
@@ -103,20 +103,16 @@ export default function Purchases() {
         title="Record Purchase"
       >
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-sm">
+          <div className="bg-stamp/10 text-stamp p-3 rounded-sm mb-4 text-sm">
             {error}
           </div>
         )}
         <form onSubmit={handleSubmit}>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Product
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Product</label>
           <select
             value={form.productId}
-            onChange={(e) =>
-              setForm({ ...form, productId: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            onChange={(e) => setForm({ ...form, productId: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           >
             <option value="">-- Select --</option>
@@ -126,15 +122,11 @@ export default function Purchases() {
               </option>
             ))}
           </select>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Supplier
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Supplier</label>
           <select
             value={form.supplierId}
-            onChange={(e) =>
-              setForm({ ...form, supplierId: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            onChange={(e) => setForm({ ...form, supplierId: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           >
             <option value="">-- Select --</option>
@@ -144,34 +136,26 @@ export default function Purchases() {
               </option>
             ))}
           </select>
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Quantity Purchased
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Quantity Purchased</label>
           <input
             type="number"
             value={form.quantityPurchased}
-            onChange={(e) =>
-              setForm({ ...form, quantityPurchased: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+            onChange={(e) => setForm({ ...form, quantityPurchased: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           />
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            Total Cost
-          </label>
+          <label className="block text-sm font-medium text-ink mb-1">Total Cost</label>
           <input
             type="number"
             step="0.01"
             value={form.totalCost}
-            onChange={(e) =>
-              setForm({ ...form, totalCost: e.target.value })
-            }
-            className="w-full border border-slate-300 rounded-md px-3 py-2 mb-6"
+            onChange={(e) => setForm({ ...form, totalCost: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-6 text-sm focus:outline-none focus:border-brass"
             required
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-brass hover:bg-brass-dark text-white py-2 rounded-sm text-sm transition"
           >
             Record Purchase
           </button>

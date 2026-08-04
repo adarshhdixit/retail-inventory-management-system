@@ -73,49 +73,49 @@ export default function Suppliers() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Suppliers</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink">Suppliers</h1>
         <button
           onClick={openCreateModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-brass hover:bg-brass-dark text-white px-4 py-2 rounded-sm text-sm transition"
         >
           + Add Supplier
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">
+        <div className="bg-stamp/10 text-stamp p-3 rounded-sm mb-4 text-sm">
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-sm border border-ledger-line overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-slate-100 text-slate-600 text-sm">
+          <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
             <tr>
-              <th className="p-3">Name</th>
-              <th className="p-3">Contact Person</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Phone</th>
-              <th className="p-3 w-32">Actions</th>
+              <th className="p-3 font-semibold">Name</th>
+              <th className="p-3 font-semibold">Contact Person</th>
+              <th className="p-3 font-semibold">Email</th>
+              <th className="p-3 font-semibold">Phone</th>
+              <th className="p-3 font-semibold w-32">Actions</th>
             </tr>
           </thead>
           <tbody>
             {suppliers.map((s) => (
-              <tr key={s.id} className="border-t border-slate-100">
-                <td className="p-3">{s.name}</td>
-                <td className="p-3 text-slate-500">{s.contactPerson}</td>
-                <td className="p-3 text-slate-500">{s.email}</td>
-                <td className="p-3 text-slate-500">{s.phoneNumber}</td>
-                <td className="p-3 flex gap-2">
+              <tr key={s.id} className="border-t border-ledger-line">
+                <td className="p-3 text-ink text-sm">{s.name}</td>
+                <td className="p-3 text-slate-text text-sm">{s.contactPerson}</td>
+                <td className="p-3 text-slate-text text-sm">{s.email}</td>
+                <td className="p-3 font-mono text-sm text-ink">{s.phoneNumber}</td>
+                <td className="p-3 flex gap-3">
                   <button
                     onClick={() => openEditModal(s)}
-                    className="text-blue-600 hover:underline text-sm"
+                    className="text-brass-dark hover:underline text-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => setDeleteId(s.id)}
-                    className="text-red-600 hover:underline text-sm"
+                    className="text-stamp hover:underline text-sm"
                   >
                     Delete
                   </button>
@@ -134,23 +134,21 @@ export default function Suppliers() {
         <form onSubmit={handleSubmit}>
           {["name", "contactPerson", "email", "phoneNumber"].map((field) => (
             <div key={field}>
-              <label className="block text-sm font-medium text-slate-600 mb-1 capitalize">
+              <label className="block text-sm font-medium text-ink mb-1 capitalize">
                 {field === "contactPerson" ? "Contact Person" : field}
               </label>
               <input
                 type="text"
                 value={form[field]}
-                onChange={(e) =>
-                  setForm({ ...form, [field]: e.target.value })
-                }
-                className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4"
+                onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
                 required={field === "name"}
               />
             </div>
           ))}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-brass hover:bg-brass-dark text-white py-2 rounded-sm text-sm transition"
           >
             Save
           </button>

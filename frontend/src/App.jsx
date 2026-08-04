@@ -16,6 +16,8 @@ import CustomerAuth from "./pages/CustomerAuth";
 import ProductDetail from "./pages/ProductDetail";
 import MyOrders from './pages/MyOrders';
 import Orders from './pages/Orders';
+import Staff from './pages/Staff';
+import Addresses from './pages/Addresses';
 
 function App() {
   return (
@@ -88,7 +90,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/staff"
+              element={
+                <ProtectedRoute>
+                  <Staff />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/addresses" element={<Addresses />} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

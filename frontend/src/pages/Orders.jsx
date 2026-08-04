@@ -10,12 +10,12 @@ const STATUS_OPTIONS = {
   CANCELLED: [],
 };
 
-const STATUS_STYLES = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  PAID: "bg-blue-100 text-blue-800",
-  OUT_FOR_DELIVERY: "bg-purple-100 text-purple-800",
-  DELIVERED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-red-100 text-red-800",
+const STATUS_STAMP = {
+  PENDING: "border-slate-text text-slate-text -rotate-2",
+  PAID: "border-brass-dark text-brass-dark rotate-1",
+  OUT_FOR_DELIVERY: "border-yellow-500 text-yellow-600 -rotate-1",
+  DELIVERED: "border-sage text-sage rotate-2",
+  CANCELLED: "border-stamp text-stamp -rotate-3",
 };
 
 export default function Orders() {
@@ -62,26 +62,26 @@ export default function Orders() {
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Orders</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink">Orders</h1>
       </div>
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">
+        <div className="bg-stamp/10 text-stamp p-3 rounded-sm mb-4 text-sm">
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-sm border border-ledger-line overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-slate-100 text-slate-600 text-sm">
+          <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
             <tr>
-              <th className="p-3">Order #</th>
-              <th className="p-3">Customer</th>
-              <th className="p-3">Items</th>
-              <th className="p-3">Total</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Delivery Person</th>
-              <th className="p-3 w-64">Update</th>
+              <th className="p-3 font-semibold">Order #</th>
+              <th className="p-3 font-semibold">Customer</th>
+              <th className="p-3 font-semibold">Items</th>
+              <th className="p-3 font-semibold">Total</th>
+              <th className="p-3 font-semibold">Status</th>
+              <th className="p-3 font-semibold">Delivery Person</th>
+              <th className="p-3 font-semibold w-64">Update</th>
             </tr>
           </thead>
           <tbody>
@@ -90,36 +90,40 @@ export default function Orders() {
               const needsStaff = selectedStatus[o.id] === "OUT_FOR_DELIVERY";
 
               return (
-                <tr key={o.id} className="border-t border-slate-100 align-top">
-                  <td className="p-3">#{o.id}</td>
+                <tr key={o.id} className="border-t border-ledger-line align-top">
+                  <td className="p-3 font-mono text-sm text-ink">#{o.id}</td>
                   <td className="p-3">
-                    <p className="font-medium">{o.customerName}</p>
-                    <p className="text-slate-500 text-sm">{o.phone}</p>
-                    <p className="text-slate-400 text-xs">{o.shippingAddress}</p>
+                    <p className="text-ink text-sm font-medium">{o.customerName}</p>
+                    <p className="text-slate-text text-sm font-mono">{o.phone}</p>
+                    <p className="text-slate-text/70 text-xs">{o.shippingAddress}</p>
                   </td>
-                  <td className="p-3 text-sm text-slate-600">
+                  <td className="p-3 text-sm text-slate-text">
                     {o.items?.map((item, idx) => (
                       <div key={idx}>
                         {item.productName} × {item.quantity}
                       </div>
                     ))}
                   </td>
-                  <td className="p-3">₹{o.totalAmount?.toFixed(2)}</td>
+                  <td className="p-3 font-mono text-sm text-ink">
+                    ₹{o.totalAmount?.toFixed(2)}
+                  </td>
                   <td className="p-3">
                     <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        STATUS_STYLES[o.status] || "bg-gray-100 text-gray-800"
+                      className={`inline-block px-2 py-1 border-2 rounded-sm text-xs font-semibold uppercase tracking-wide bg-white ${
+                        STATUS_STAMP[o.status] || "border-slate-text text-slate-text"
                       }`}
                     >
-                      {o.status}
+                      {o.status.replace(/_/g, " ")}
                     </span>
                   </td>
-                  <td className="p-3 text-sm text-slate-600">
-                    {o.deliveryPersonName || "—"}
+                  <td className="p-3 text-sm text-ink">
+                    {o.deliveryPersonName || (
+                      <span className="text-slate-text/50">—</span>
+                    )}
                   </td>
                   <td className="p-3">
                     {nextOptions.length === 0 ? (
-                      <span className="text-slate-400 text-sm">No actions</span>
+                      <span className="text-slate-text/50 text-sm">No actions</span>
                     ) : (
                       <div className="flex flex-col gap-2">
                         <select
@@ -127,12 +131,12 @@ export default function Orders() {
                           onChange={(e) =>
                             setSelectedStatus({ ...selectedStatus, [o.id]: e.target.value })
                           }
-                          className="border border-slate-300 rounded-md px-2 py-1 text-sm"
+                          className="border border-ledger-line rounded-sm px-2 py-1 text-sm focus:outline-none focus:border-brass"
                         >
                           <option value="">-- Select status --</option>
                           {nextOptions.map((s) => (
                             <option key={s} value={s}>
-                              {s}
+                              {s.replace(/_/g, " ")}
                             </option>
                           ))}
                         </select>
@@ -143,7 +147,7 @@ export default function Orders() {
                             onChange={(e) =>
                               setSelectedStaff({ ...selectedStaff, [o.id]: e.target.value })
                             }
-                            className="border border-slate-300 rounded-md px-2 py-1 text-sm"
+                            className="border border-ledger-line rounded-sm px-2 py-1 text-sm focus:outline-none focus:border-brass"
                           >
                             <option value="">-- Select delivery person --</option>
                             {staff.map((s) => (
@@ -156,7 +160,7 @@ export default function Orders() {
 
                         <button
                           onClick={() => handleUpdate(o.id)}
-                          className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700"
+                          className="bg-brass hover:bg-brass-dark text-white px-3 py-1 rounded-sm text-sm transition"
                         >
                           Update
                         </button>
