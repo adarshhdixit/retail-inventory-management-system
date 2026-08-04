@@ -1,10 +1,11 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Unbounded:wght@700;800&family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @theme {
   --font-display: "Poppins", sans-serif;
   --font-sans: "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
+  --font-shop-logo: "Luckiest Guy", cursive;
 
   --color-ink: #2E3A8C;
   --color-ledger: #FFFFFF;
@@ -15,4 +16,31 @@
   --color-stamp: #EF4444;
   --color-slate-text: #64748B;
   --color-accent: #22D3EE;
+
+/* Customer storefront */
+--font-shop-logo: "Luckiest Guy", cursive;
+--font-shop-display: "Space Grotesk", sans-serif;
+--color-shop-bg: #F4F5F3;
+--color-shop-card: #FFFFFF;
+--color-shop-text: #4C5B5C;
+--color-shop-primary: #FF715B;
+--color-shop-primary-dark: #E15A45;
+--color-shop-highlight: #4C5B5C;
+--color-shop-accent: #2F52E0;
+--color-shop-warning: #F9CB40;
+--color-shop-success: #BCED09;
+--color-shop-error: #C24632;
+--color-shop-deliverable: #BCED09;
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 22s linear infinite;
 }

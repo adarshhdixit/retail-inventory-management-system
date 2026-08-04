@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import api from '../api/axiosInstance';
 import { getCustomerLocation } from '../utils/locationCheck';
+import Header from '../components/Header';
 
 function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -105,7 +106,7 @@ function Checkout() {
           navigate('/order-success');
         },
         prefill: { contact: phone },
-        theme: { color: '#2563eb' },
+        theme: { color: '#FF715B' },
       };
 
       const rzp = new window.Razorpay(options);
@@ -119,103 +120,119 @@ function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 max-w-lg mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Checkout</h1>
+    <div className="min-h-screen bg-shop-bg">
+      <Header />
 
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      <div className="p-6 md:p-8 max-w-lg mx-auto">
+        <h1 className="font-shop-display text-3xl font-bold mb-6 text-shop-text">
+          Checkout
+        </h1>
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-gray-700">Delivery Address</label>
-          <Link to="/addresses" className="text-xs text-blue-600 hover:underline">
-            Manage addresses
-          </Link>
+        {error && (
+          <p className="text-shop-error text-sm mb-4 bg-shop-error/10 rounded-xl px-3 py-2">
+            {error}
+          </p>
+        )}
+
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-shop-text">
+              Delivery Address
+            </label>
+            <Link to="/addresses" className="text-xs text-shop-primary hover:underline">
+              Manage addresses
+            </Link>
+          </div>
+
+          {addresses.length === 0 ? (
+            <div className="bg-shop-warning/15 text-shop-highlight text-sm p-3 rounded-xl">
+              You don't have any saved addresses yet.{' '}
+              <Link to="/addresses" className="underline font-medium text-shop-primary">
+                Add one
+              </Link>{' '}
+              before checking out.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {addresses.map((addr) => (
+                <label
+                  key={addr.id}
+                  className={`flex items-start gap-3 border rounded-xl p-3 cursor-pointer transition ${
+                    selectedAddressId === addr.id
+                      ? 'border-shop-primary bg-shop-primary/5'
+                      : 'border-shop-highlight/20 bg-shop-card'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="address"
+                    checked={selectedAddressId === addr.id}
+                    onChange={() => {
+                      setSelectedAddressId(addr.id);
+                      setOverrideCoords(null);
+                    }}
+                    className="mt-1 accent-shop-primary"
+                  />
+                  <div>
+                    <p className="font-medium text-sm text-shop-text">{addr.label}</p>
+                    <p className="text-xs text-shop-highlight">
+                      {addr.houseNumber}, {addr.streetName}, near {addr.landmark}
+                    </p>
+                  </div>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
-        {addresses.length === 0 ? (
-          <div className="bg-yellow-50 text-yellow-800 text-sm p-3 rounded-md">
-            You don't have any saved addresses yet.{' '}
-            <Link to="/addresses" className="underline font-medium">
-              Add one
-            </Link>{' '}
-            before checking out.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {addresses.map((addr) => (
-              <label
-                key={addr.id}
-                className={`flex items-start gap-3 border rounded-md p-3 cursor-pointer ${
-                  selectedAddressId === addr.id
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 bg-white'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="address"
-                  checked={selectedAddressId === addr.id}
-                  onChange={() => {
-                    setSelectedAddressId(addr.id);
-                    setOverrideCoords(null);
-                  }}
-                  className="mt-1"
-                />
-                <div>
-                  <p className="font-medium text-sm">{addr.label}</p>
-                  <p className="text-xs text-gray-600">
-                    {addr.houseNumber}, {addr.streetName}, near {addr.landmark}
-                  </p>
-                </div>
-              </label>
-            ))}
+        {selectedAddress && !coords && (
+          <div className="bg-shop-warning/15 text-shop-highlight text-sm p-3 rounded-xl mb-4">
+            This address has no location saved, so we can't confirm delivery.
+            <button
+              type="button"
+              onClick={handleDetectForThisOrder}
+              disabled={locating}
+              className="block mt-2 text-shop-primary underline"
+            >
+              {locating ? 'Detecting...' : 'Detect location for this order'}
+            </button>
           </div>
         )}
+
+        {coords && serviceability === 'DELIVERABLE' && (
+          <div className="bg-shop-deliverable/25 text-shop-text text-sm p-3 rounded-xl mb-4 font-medium">
+            We deliver to this location — order will reach in 15–20 minutes.
+          </div>
+        )}
+
+        {coords && serviceability === 'OUT_OF_RANGE' && (
+          <div className="bg-shop-error/10 text-shop-error text-sm p-3 rounded-xl mb-4">
+            Sorry, this address is outside our delivery area.
+          </div>
+        )}
+
+        <label className="block text-sm font-medium text-shop-text mb-1">
+          Contact Number
+        </label>
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full border border-shop-highlight/20 rounded-xl p-2.5 mb-6 text-sm focus:outline-none focus:border-shop-primary transition"
+          placeholder="e.g. 9876543210"
+        />
+
+        <p className="text-lg font-bold mb-4 text-shop-text">
+          Total: <span className="font-mono">₹{cartTotal.toFixed(2)}</span>
+        </p>
+
+        <button
+          onClick={handlePlaceOrder}
+          disabled={loading || serviceability === 'OUT_OF_RANGE'}
+          className="w-full bg-shop-primary text-white py-3 rounded-full font-semibold hover:bg-shop-primary-dark transition disabled:opacity-50 shadow-sm"
+        >
+          {loading ? 'Processing...' : 'Pay Now'}
+        </button>
       </div>
-
-      {selectedAddress && !coords && (
-        <div className="bg-yellow-50 text-yellow-800 text-sm p-3 rounded-md mb-4">
-          This address has no location saved, so we can't confirm delivery.
-          <button
-            type="button"
-            onClick={handleDetectForThisOrder}
-            disabled={locating}
-            className="block mt-2 text-blue-600 underline"
-          >
-            {locating ? 'Detecting...' : 'Detect location for this order'}
-          </button>
-        </div>
-      )}
-
-      {coords && serviceability === 'DELIVERABLE' && (
-        <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md mb-4">
-          We deliver to this location — order will reach in 15–20 minutes.
-        </div>
-      )}
-
-      {coords && serviceability === 'OUT_OF_RANGE' && (
-        <div className="bg-red-50 text-red-700 text-sm p-3 rounded-md mb-4">
-          Sorry, this address is outside our delivery area.
-        </div>
-      )}
-
-      <label className="block text-sm font-medium mb-1">Contact Number</label>
-      <input
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full border rounded-md p-2 mb-6"
-        placeholder="e.g. 9876543210"
-      />
-
-      <p className="text-lg font-bold mb-4">Total: ₹{cartTotal.toFixed(2)}</p>
-
-      <button
-        onClick={handlePlaceOrder}
-        disabled={loading || serviceability === 'OUT_OF_RANGE'}
-        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-      >
-        {loading ? 'Processing...' : 'Pay Now'}
-      </button>
     </div>
   );
 }

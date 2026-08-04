@@ -1,17 +1,14 @@
 import { publicApi } from '../api/axiosInstance';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { getCustomerLocation } from '../utils/locationCheck';
-import AccountMenu from '../components/AccountMenu';
-
-
+import Header from '../components/Header';
 
 function StoreHome() {
   const [products, setProducts] = useState([]);
-  const [serviceable, setServiceable] = useState(null); // null = checking, true/false/'unknown' once known
-  const { addToCart, cartItems } = useCart();
+  const [serviceable, setServiceable] = useState(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     publicApi.get('/products').then((res) => {
@@ -33,7 +30,7 @@ function StoreHome() {
         setServiceable(res.data === 'DELIVERABLE');
       })
       .catch((error) => {
-        if (error.code === 1 /* PERMISSION_DENIED */) {
+        if (error.code === 1) {
           alert(
             "Location is blocked for this site. Please enable it manually:\n\n" +
             "Click the padlock icon next to the website address → Site settings → Location → Allow.\n\n" +
@@ -44,66 +41,92 @@ function StoreHome() {
       });
   };
 
-
-  const totalItemsInCart = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      {serviceable === false && (
-        <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6">
-          Sorry, we currently don't deliver to your location. You can still browse, but ordering isn't available yet.
+    <div className="min-h-screen bg-shop-bg">
+      {/* Slim marquee delivery strip — scrolls away, sits above the sticky header */}
+      {serviceable !== null && (
+        <div
+          className={`overflow-hidden py-1.5 ${
+            serviceable === true
+              ? 'bg-shop-deliverable'
+              : serviceable === false
+              ? 'bg-shop-error'
+              : 'bg-shop-highlight'
+          }`}
+        >
+          <div className="animate-marquee flex whitespace-nowrap">
+            {[...Array(2)].map((_, i) => (
+              <span key={i} className="flex items-center text-white text-xs font-medium tracking-wide">
+                {Array(6)
+                  .fill(
+                    serviceable === true
+                      ? ' WE DELIVER TO YOUR AREA'
+                      : serviceable === false
+                      ? "WE DON'T DELIVER TO YOUR LOCATION YET"
+                      : 'ENABLE LOCATION TO CHECK DELIVERY'
+                  )
+                  .map((text, j) => (
+                    <span key={j} className="mx-6 flex items-center gap-6">
+                      {text}
+                      {serviceable === true && <span>FREE DELIVERY ON ORDERS ABOVE ₹299</span>}
+                      <span className="opacity-60">•</span>
+                    </span>
+                  ))}
+              </span>
+            ))}
+          </div>
         </div>
       )}
-      {serviceable === true && (
-        <div className="bg-green-100 text-green-700 px-4 py-3 rounded-md mb-6">
-          Great news — we deliver to your area!
-        </div>
-      )}
+
       {serviceable === 'unknown' && (
-        <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md mb-6 flex justify-between items-center">
-          <span>We need your location to check if we deliver to you.</span>
+        <div className="bg-shop-highlight/10 px-6 py-2 flex justify-center">
           <button
             onClick={checkLocation}
-            className="bg-yellow-600 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700"
+            className="text-shop-highlight text-xs underline underline-offset-2 hover:opacity-80"
           >
             Enable Location
           </button>
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Our Products</h1>
-        <div className="flex gap-3 items-center">
-          <AccountMenu />
-          <Link
-            to="/cart"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-          >
-            Cart ({totalItemsInCart})
-          </Link>
-        </div>
-      </div>
+      <Header />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow p-4">
-            <Link to={`/product/${product.id}`}>
-              <h2 className="font-semibold text-gray-800">{product.name}</h2>
-              <p className="text-gray-500 text-sm mb-2">₹{product.price}</p>
-            </Link>
-            <button
-              onClick={() => addToCart(product)}
-              disabled={serviceable === false}
-              className={`w-full py-1.5 rounded-md text-sm text-white ${
-                serviceable === false
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+      <div className="p-6 md:p-8">
+        <h1 className="font-shop-display text-3xl md:text-4xl font-bold text-shop-text mb-1">
+          Our Products
+        </h1>
+        <p className="text-shop-highlight/70 text-sm mb-8">
+          Everything for your desk, delivered fast.
+        </p>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="bg-shop-card rounded-2xl p-4 shadow-sm hover:shadow-md transition"
             >
-              Add to Cart
-            </button>
-          </div>
-        ))}
+              <Link to={`/product/${product.id}`}>
+                <h2 className="font-shop-display font-semibold text-shop-text mb-1">
+                  {product.name}
+                </h2>
+                <p className="font-mono text-shop-primary-dark font-bold text-sm mb-3">
+                  ₹{product.price}
+                </p>
+              </Link>
+              <button
+                onClick={() => addToCart(product)}
+                disabled={serviceable === false}
+                className={`w-full py-2 rounded-full text-sm font-semibold text-white transition ${
+                  serviceable === false
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-shop-text hover:bg-shop-primary'
+                }`}
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

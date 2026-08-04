@@ -4,6 +4,7 @@ import axiosInstance from '../api/axiosInstance';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { getCustomerLocation } from '../utils/locationCheck';
+import Header from '../components/Header';
 
 function Addresses() {
   const [addresses, setAddresses] = useState([]);
@@ -123,118 +124,128 @@ function Addresses() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="flex justify-between items-center mb-6 max-w-2xl">
-        <h1 className="text-3xl font-bold text-gray-800">My Addresses</h1>
-        <button
-          onClick={openCreateModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-        >
-          + Add Address
-        </button>
-      </div>
+    <div className="min-h-screen bg-shop-bg">
+      <Header />
 
-      {error && !modalOpen && (
-        <p className="text-red-500 text-sm mb-4 max-w-2xl">{error}</p>
-      )}
+      <div className="p-6 md:p-8">
+        <div className="flex justify-between items-center mb-6 max-w-2xl">
+          <h1 className="font-shop-display text-3xl font-bold text-shop-text">
+            My Addresses
+          </h1>
+          <button
+            onClick={openCreateModal}
+            className="bg-shop-primary text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-shop-primary-dark transition"
+          >
+            + Add Address
+          </button>
+        </div>
 
-      {addresses.length === 0 ? (
-        <p className="text-gray-500">No saved addresses yet.</p>
-      ) : (
-        <div className="space-y-3 max-w-2xl">
-          {addresses.map((addr) => (
-            <div key={addr.id} className="bg-white rounded-lg shadow p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-gray-800">{addr.label}</p>
-                    {addr.isDefault && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                        Default
-                      </span>
+        {error && !modalOpen && (
+          <p className="text-shop-error text-sm mb-4 max-w-2xl">{error}</p>
+        )}
+
+        {addresses.length === 0 ? (
+          <p className="text-shop-highlight">No saved addresses yet.</p>
+        ) : (
+          <div className="space-y-3 max-w-2xl">
+            {addresses.map((addr) => (
+              <div key={addr.id} className="bg-shop-card rounded-2xl shadow-sm p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-shop-text">{addr.label}</p>
+                      {addr.isDefault && (
+                        <span className="text-xs bg-shop-primary/15 text-shop-primary-dark px-2 py-0.5 rounded-full font-medium">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-shop-text">
+                      {addr.houseNumber}, {addr.streetName}
+                    </p>
+                    <p className="text-sm text-shop-highlight">Near {addr.landmark}</p>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-2 text-sm">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => openEditModal(addr)}
+                        className="text-shop-primary hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteId(addr.id)}
+                        className="text-shop-error hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                    {!addr.isDefault && (
+                      <button
+                        onClick={() => handleSetDefault(addr.id)}
+                        className="text-shop-highlight hover:underline text-xs"
+                      >
+                        Set as default
+                      </button>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">
-                    {addr.houseNumber}, {addr.streetName}
-                  </p>
-                  <p className="text-sm text-gray-500">Near {addr.landmark}</p>
-                </div>
-
-                <div className="flex flex-col items-end gap-2 text-sm">
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => openEditModal(addr)}
-                      className="text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(addr.id)}
-                      className="text-red-500 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                  {!addr.isDefault && (
-                    <button
-                      onClick={() => handleSetDefault(addr.id)}
-                      className="text-gray-500 hover:underline text-xs"
-                    >
-                      Set as default
-                    </button>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      <Link to="/store" className="inline-block mt-6 text-blue-600 text-sm">
-        ← Back to store
-      </Link>
+        <Link to="/store" className="inline-block mt-6 text-shop-highlight text-sm hover:text-shop-primary transition">
+          ← Back to store
+        </Link>
+      </div>
 
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editingId ? 'Edit Address' : 'Add Address'}
       >
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && <p className="text-shop-error text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+          <label className="block text-sm font-medium text-shop-text mb-1">Label</label>
           <input
             type="text"
             placeholder="e.g. Home, Friend's Place"
             value={form.label}
             onChange={(e) => setForm({ ...form, label: e.target.value })}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-shop-highlight/20 rounded-xl px-3 py-2 mb-4 text-sm focus:outline-none focus:border-shop-primary transition"
             required
           />
 
-          <label className="block text-sm font-medium text-gray-700 mb-1">House / Flat Number</label>
+          <label className="block text-sm font-medium text-shop-text mb-1">
+            House / Flat Number
+          </label>
           <input
             type="text"
             value={form.houseNumber}
             onChange={(e) => setForm({ ...form, houseNumber: e.target.value })}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-shop-highlight/20 rounded-xl px-3 py-2 mb-4 text-sm focus:outline-none focus:border-shop-primary transition"
             required
           />
 
-          <label className="block text-sm font-medium text-gray-700 mb-1">Street Name</label>
+          <label className="block text-sm font-medium text-shop-text mb-1">Street Name</label>
           <input
             type="text"
             value={form.streetName}
             onChange={(e) => setForm({ ...form, streetName: e.target.value })}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-shop-highlight/20 rounded-xl px-3 py-2 mb-4 text-sm focus:outline-none focus:border-shop-primary transition"
             required
           />
 
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nearby Landmark</label>
+          <label className="block text-sm font-medium text-shop-text mb-1">
+            Nearby Landmark
+          </label>
           <input
             type="text"
             value={form.landmark}
             onChange={(e) => setForm({ ...form, landmark: e.target.value })}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+            className="w-full border border-shop-highlight/20 rounded-xl px-3 py-2 mb-4 text-sm focus:outline-none focus:border-shop-primary transition"
             required
           />
 
@@ -242,7 +253,7 @@ function Addresses() {
             type="button"
             onClick={handleUseCurrentLocation}
             disabled={locating}
-            className="w-full mb-2 border border-blue-600 text-blue-600 py-2 rounded-md text-sm hover:bg-blue-50 transition flex items-center justify-center gap-2"
+            className="w-full mb-2 border border-shop-primary text-shop-primary py-2 rounded-full text-sm hover:bg-shop-primary/5 transition flex items-center justify-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -272,7 +283,7 @@ function Addresses() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition mt-4"
+            className="w-full bg-shop-primary text-white py-2.5 rounded-full font-semibold hover:bg-shop-primary-dark transition mt-4"
           >
             Save Address
           </button>
