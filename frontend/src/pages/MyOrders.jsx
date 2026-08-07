@@ -82,7 +82,11 @@ function MyOrders() {
                   {order.items?.map((item, idx) => (
                     <div key={idx} className="flex justify-between text-sm text-shop-text">
                       <span>
-                        {item.productName} × {item.quantity}
+                        {item.productName}
+                        {item.colorName && (
+                          <span className="text-shop-highlight"> ({item.colorName})</span>
+                        )}
+                        {' '}× {item.quantity}
                       </span>
                       <span className="font-mono">
                         ₹{(item.priceAtPurchase * item.quantity).toFixed(2)}

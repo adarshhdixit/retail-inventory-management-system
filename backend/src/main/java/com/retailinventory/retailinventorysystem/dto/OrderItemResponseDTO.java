@@ -8,4 +8,5 @@ public class OrderItemResponseDTO {
     private String productName;
     private Integer quantity;
     private Double priceAtPurchase;
+    private String colorName;
 }

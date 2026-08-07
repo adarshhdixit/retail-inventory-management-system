@@ -18,6 +18,8 @@ import MyOrders from './pages/MyOrders';
 import Orders from './pages/Orders';
 import Staff from './pages/Staff';
 import Addresses from './pages/Addresses';
+import CustomerProtectedRoute from './components/CustomerProtectedRoute';
+import Banners from './pages/Banners';
 
 function App() {
   return (
@@ -29,7 +31,14 @@ function App() {
             <Route path="/" element={<StoreHome />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route
+              path="/checkout"
+              element={
+                <CustomerProtectedRoute>
+                  <Checkout />
+                </CustomerProtectedRoute>
+              }
+            />
             <Route path="/account" element={<CustomerAuth />} />
 
             {/* Admin — clearly separated under /admin */}
@@ -98,8 +107,30 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/my-orders" element={<MyOrders />} />
-            <Route path="/addresses" element={<Addresses />} />
+            <Route
+              path="/my-orders"
+              element={
+                <CustomerProtectedRoute>
+                  <MyOrders />
+                </CustomerProtectedRoute>
+              }
+            />
+            <Route
+              path="/addresses"
+              element={
+                <CustomerProtectedRoute>
+                  <Addresses />
+                </CustomerProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/banners"
+              element={
+                <ProtectedRoute>
+                  <Banners />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

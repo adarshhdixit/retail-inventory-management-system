@@ -19,6 +19,7 @@ export default function Layout({ children }) {
     { to: "/admin/sales", label: "Sales" },
     { to: "/admin/orders", label: "Orders" },
     { to: "/admin/staff", label: "Staff" },
+    { to: "/admin/banners", label: "Banners" },
   ];
 
   return (

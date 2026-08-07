@@ -32,6 +32,8 @@ public class OrderService {
     private RazorpayService razorpayService;
     @Autowired
     private com.retailinventory.retailinventorysystem.config.ShopConfig shopConfig;
+    @Autowired
+    private com.retailinventory.retailinventorysystem.repository.ProductVariantRepository variantRepository;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO request, Long customerId) throws RazorpayException {
@@ -66,13 +68,26 @@ public class OrderService {
             Product product = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + itemReq.getProductId()));
 
-            if (product.getQuantity() < itemReq.getQuantity()) {
-                throw new IllegalArgumentException("Insufficient stock for: " + product.getName());
+            ProductVariant variant = null;
+            if (itemReq.getVariantId() != null) {
+                variant = variantRepository.findById(itemReq.getVariantId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Color variant not found"));
+
+                if (variant.getQuantity() < itemReq.getQuantity()) {
+                    throw new IllegalArgumentException(
+                            "Insufficient stock for " + product.getName() + " (" + variant.getColorName() + ")"
+                    );
+                }
+            } else {
+                if (product.getQuantity() < itemReq.getQuantity()) {
+                    throw new IllegalArgumentException("Insufficient stock for: " + product.getName());
+                }
             }
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
             item.setProduct(product);
+            item.setVariant(variant);
             item.setQuantity(itemReq.getQuantity());
             item.setPriceAtPurchase(product.getPrice());
             items.add(item);
@@ -114,15 +129,23 @@ public class OrderService {
 
         // Reduce stock for each item
         for (OrderItem item : order.getItems()) {
-            Product product = item.getProduct();
-            product.setQuantity(product.getQuantity() - item.getQuantity());
-            productRepository.save(product);
+            if (item.getVariant() != null) {
+                ProductVariant variant = item.getVariant();
+                variant.setQuantity(variant.getQuantity() - item.getQuantity());
+                variantRepository.save(variant);
+            } else {
+                Product product = item.getProduct();
+                product.setQuantity(product.getQuantity() - item.getQuantity());
+                productRepository.save(product);
+            }
         }
 
         orderRepository.save(order);
     }
+
     public List<OrderResponseDTO> getOrdersForCustomer(Long customerId) {
         List<Order> orders = orderRepository.findByCustomerId(customerId);
+        orders.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         List<OrderResponseDTO> response = new ArrayList<>();
 
         for (Order order : orders) {
@@ -143,6 +166,7 @@ public class OrderService {
                 itemDto.setProductName(item.getProduct().getName());
                 itemDto.setQuantity(item.getQuantity());
                 itemDto.setPriceAtPurchase(item.getPriceAtPurchase());
+                itemDto.setColorName(item.getVariant() != null ? item.getVariant().getColorName() : null);
                 itemDtos.add(itemDto);
             }
             dto.setItems(itemDtos);
@@ -152,6 +176,7 @@ public class OrderService {
 
         return response;
     }
+
     @Transactional
     public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus newStatus, String deliveryPersonName) {
         Order order = orderRepository.findById(orderId)
@@ -191,8 +216,10 @@ public class OrderService {
             );
         }
     }
+
     public List<OrderResponseDTO> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
+        orders.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         List<OrderResponseDTO> response = new ArrayList<>();
 
         for (Order order : orders) {
@@ -207,13 +234,13 @@ public class OrderService {
             dto.setPhone(order.getPhone());
             dto.setDeliveryPersonName(order.getDeliveryPersonName());
 
-
             List<OrderItemResponseDTO> itemDtos = new ArrayList<>();
             for (OrderItem item : order.getItems()) {
                 OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
                 itemDto.setProductName(item.getProduct().getName());
                 itemDto.setQuantity(item.getQuantity());
                 itemDto.setPriceAtPurchase(item.getPriceAtPurchase());
+                itemDto.setColorName(item.getVariant() != null ? item.getVariant().getColorName() : null);
                 itemDtos.add(itemDto);
             }
             dto.setItems(itemDtos);

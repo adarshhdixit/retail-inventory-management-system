@@ -20,47 +20,62 @@ function Cart() {
         ) : (
           <>
             <div className="bg-shop-card rounded-2xl shadow-sm divide-y divide-shop-highlight/10 max-w-2xl">
-              {cartItems.map((item) => (
-                <div key={item.product.id} className="flex justify-between items-center p-4">
-                  <div>
-                    <p className="font-medium text-shop-text">{item.product.name}</p>
-                    <p className="text-sm text-shop-highlight">
-                      ₹{item.product.price} each
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center border border-shop-highlight/20 rounded-full overflow-hidden">
-                      <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                        className="px-3 py-1 text-lg text-shop-text hover:bg-shop-bg transition"
-                      >
-                        −
-                      </button>
-                      <span className="px-4 font-mono text-sm text-shop-text">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        className="px-3 py-1 text-lg text-shop-text hover:bg-shop-bg transition"
-                      >
-                        +
-                      </button>
+              {cartItems.map((item) => {
+                const variantId = item.variant?.id ?? null;
+                return (
+                  <div
+                    key={`${item.product.id}-${variantId ?? 'default'}`}
+                    className="flex justify-between items-center p-4"
+                  >
+                    <div>
+                      <p className="font-medium text-shop-text">{item.product.name}</p>
+                      {item.variant && (
+                        <p className="text-xs text-shop-primary-dark font-medium">
+                          Color: {item.variant.colorName}
+                        </p>
+                      )}
+                      <p className="text-sm text-shop-highlight">
+                        ₹{item.product.price} each
+                      </p>
                     </div>
 
-                    <p className="w-20 text-right font-mono font-semibold text-shop-text">
-                      ₹{(item.product.price * item.quantity).toFixed(2)}
-                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center border border-shop-highlight/20 rounded-full overflow-hidden">
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.product.id, variantId, item.quantity - 1)
+                          }
+                          className="px-3 py-1 text-lg text-shop-text hover:bg-shop-bg transition"
+                        >
+                          −
+                        </button>
+                        <span className="px-4 font-mono text-sm text-shop-text">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.product.id, variantId, item.quantity + 1)
+                          }
+                          className="px-3 py-1 text-lg text-shop-text hover:bg-shop-bg transition"
+                        >
+                          +
+                        </button>
+                      </div>
 
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="text-shop-error text-sm hover:underline"
-                    >
-                      Remove
-                    </button>
+                      <p className="w-20 text-right font-mono font-semibold text-shop-text">
+                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                      </p>
+
+                      <button
+                        onClick={() => removeFromCart(item.product.id, variantId)}
+                        className="text-shop-error text-sm hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="mt-6 flex justify-between items-center max-w-2xl">

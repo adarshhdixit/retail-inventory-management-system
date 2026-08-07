@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.retailinventory.retailinventorysystem.repository.ProductVariantRepository;
+import com.retailinventory.retailinventorysystem.dto.ProductVariantResponseDTO;
 
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ProductVariantRepository variantRepository;
 
     private ProductResponseDTO convertToDTO(Product product) {
         ProductResponseDTO dto = new ProductResponseDTO();
@@ -24,6 +28,20 @@ public class ProductService {
         dto.setQuantity(product.getQuantity());
         dto.setCategoryName(product.getCategory() != null ? product.getCategory().getName() : null);
         dto.setSupplierName(product.getSupplier() != null ? product.getSupplier().getName() : null);
+        dto.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : null);
+        dto.setSupplierId(product.getSupplier() != null ? product.getSupplier().getId() : null);
+        dto.setSubCategory(product.getSubCategory());
+        dto.setVariants(
+                variantRepository.findByProductId(product.getId()).stream()
+                        .map(v -> {
+                            ProductVariantResponseDTO vDto = new ProductVariantResponseDTO();
+                            vDto.setId(v.getId());
+                            vDto.setColorName(v.getColorName());
+                            vDto.setQuantity(v.getQuantity());
+                            return vDto;
+                        })
+                        .collect(java.util.stream.Collectors.toList())
+        );
         return dto;
     }
 

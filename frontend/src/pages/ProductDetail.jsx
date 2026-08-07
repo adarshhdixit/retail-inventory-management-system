@@ -1,17 +1,15 @@
 import { publicApi } from '../api/axiosInstance';
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import { useCart } from '../context/CartContext';
-import AccountMenu from '../components/AccountMenu';
-
+import Header from '../components/Header';
 
 function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
   const [notFound, setNotFound] = useState(false);
-  const { addToCart } = useCart();
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+  const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
 
   useEffect(() => {
     publicApi
@@ -20,11 +18,35 @@ function ProductDetail() {
       .catch(() => setNotFound(true));
   }, [id]);
 
+  const inStockVariants = product ? (product.variants || []).filter((v) => v.quantity > 0) : [];
+
+  const currentVariant =
+    inStockVariants.length > 0
+      ? inStockVariants.find((v) => v.id === selectedVariantId) || inStockVariants[0]
+      : null;
+  const currentVariantId = currentVariant?.id ?? null;
+
+  const cartQuantity = product
+    ? cartItems.find(
+        (i) =>
+          i.product.id === product.id &&
+          (i.variant?.id ?? null) === currentVariantId
+      )?.quantity || 0
+    : 0;
+
+  const handleDecrement = () => {
+    if (cartQuantity <= 1) {
+      removeFromCart(product.id, currentVariantId);
+    } else {
+      updateQuantity(product.id, currentVariantId, cartQuantity - 1);
+    }
+  };
+
   if (notFound) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <p className="text-gray-600 mb-4">Product not found.</p>
-        <Link to="/store" className="text-blue-600 hover:underline">
+      <div className="min-h-screen bg-shop-bg flex flex-col items-center justify-center">
+        <p className="text-shop-highlight mb-4">Product not found.</p>
+        <Link to="/store" className="text-shop-primary hover:underline">
           ← Back to store
         </Link>
       </div>
@@ -33,69 +55,101 @@ function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
+      <div className="min-h-screen bg-shop-bg flex items-center justify-center">
+        <p className="text-shop-highlight">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="flex justify-between items-center mb-8 max-w-3xl mx-auto">
-        <Link to="/store" className="text-blue-600 text-sm hover:underline">
+    <div className="min-h-screen bg-shop-bg">
+      <Header />
+
+      <div className="p-6 md:p-8">
+        <Link to="/store" className="text-shop-highlight text-sm hover:text-shop-primary transition inline-block mb-6">
           ← Back to store
         </Link>
-        <div className="flex gap-3">
-          <AccountMenu />
-        </div>
-      </div>
 
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
-        <p className="text-gray-500 mb-1">
-          Category: {product.categoryName || 'N/A'}
-        </p>
-        <p className="text-2xl font-semibold text-blue-600 mb-4">
-          ₹{product.price}
-        </p>
-        <p className="text-sm text-gray-500 mb-6">
-          {product.quantity > 0
-            ? `${product.quantity} in stock`
-            : 'Out of stock'}
-        </p>
+        <div className="max-w-2xl mx-auto bg-shop-card rounded-2xl shadow-sm p-8">
+          <p className="text-xs font-semibold uppercase tracking-wide text-shop-highlight mb-2">
+            {product.categoryName || 'Uncategorized'}
+            {product.subCategory && ` · ${product.subCategory}`}
+          </p>
+          <h1 className="font-shop-display text-2xl font-bold text-shop-text mb-3">
+            {product.name}
+          </h1>
+          <p className="font-mono text-3xl font-bold text-shop-primary-dark mb-4">
+            ₹{product.price}
+          </p>
+          <p
+            className={`text-sm mb-6 font-medium ${
+              product.quantity > 0 ? 'text-shop-highlight' : 'text-shop-error'
+            }`}
+          >
+            {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+          </p>
 
-        <div className="flex items-center gap-4 mb-6">
-          <label className="text-sm font-medium text-gray-700">Quantity</label>
-          <div className="flex items-center border rounded-md">
+          {inStockVariants.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm font-medium text-shop-text mb-2">Ink Color</p>
+              <div className="flex flex-wrap gap-2">
+                {inStockVariants.map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVariantId(v.id)}
+                    className={`text-sm px-4 py-2 rounded-full border-2 transition ${
+                      currentVariantId === v.id
+                        ? 'border-shop-primary bg-shop-primary/10 text-shop-primary-dark font-semibold'
+                        : 'border-shop-highlight/20 text-shop-highlight'
+                    }`}
+                  >
+                    {v.colorName}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {product.quantity === 0 ? (
             <button
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="px-3 py-1 text-lg hover:bg-gray-100"
+              disabled
+              className="px-8 py-3 rounded-full text-white font-semibold bg-gray-300 cursor-not-allowed"
             >
-              −
+              Out of Stock
             </button>
-            <span className="px-4">{quantity}</span>
+          ) : cartQuantity === 0 ? (
             <button
-              onClick={() =>
-                setQuantity((q) => Math.min(product.quantity, q + 1))
-              }
-              className="px-3 py-1 text-lg hover:bg-gray-100"
+              onClick={() => addToCart(product, 1, currentVariant)}
+              className="px-8 py-3 rounded-full text-white font-semibold bg-shop-text hover:bg-shop-primary transition"
             >
-              +
+              Add to Cart
             </button>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-shop-primary-dark bg-shop-primary/10 px-4 py-3 rounded-full">
+                In Cart
+              </span>
+              <div className="flex items-center bg-[#00A7E1] rounded-full overflow-hidden">
+                <button
+                  onClick={handleDecrement}
+                  className="px-4 py-2.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1]"
+                >
+                  −
+                </button>
+                <span className="text-white font-mono font-semibold text-sm px-2">
+                  {cartQuantity}
+                </span>
+                <button
+                  onClick={() => updateQuantity(product.id, currentVariantId, cartQuantity + 1)}
+                  disabled={cartQuantity >= product.quantity}
+                  className="px-4 py-2.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1] disabled:opacity-50"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-
-        <button
-          onClick={() => addToCart(product, quantity)}
-          disabled={product.quantity === 0}
-          className={`px-6 py-2 rounded-md text-white font-medium ${
-            product.quantity === 0
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-        >
-          {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-        </button>
       </div>
     </div>
   );

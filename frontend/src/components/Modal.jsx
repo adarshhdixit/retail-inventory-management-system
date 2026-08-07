@@ -2,9 +2,9 @@ export default function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center p-6 pb-4 shrink-0">
           <h2 className="text-lg font-bold text-slate-800">{title}</h2>
           <button
             onClick={onClose}
@@ -13,7 +13,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
             &times;
           </button>
         </div>
-        {children}
+        <div className="px-6 pb-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

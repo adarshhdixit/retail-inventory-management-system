@@ -83,6 +83,7 @@ function Checkout() {
         items: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
+          variantId: item.variant ? item.variant.id : null,
         })),
       };
 

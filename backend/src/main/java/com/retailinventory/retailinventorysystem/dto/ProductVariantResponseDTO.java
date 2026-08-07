@@ -3,8 +3,8 @@ package com.retailinventory.retailinventorysystem.dto;
 import lombok.Data;
 
 @Data
-public class OrderItemRequestDTO {
-    private Long productId;
+public class ProductVariantResponseDTO {
+    private Long id;
+    private String colorName;
     private Integer quantity;
-    private Long variantId;
 }
