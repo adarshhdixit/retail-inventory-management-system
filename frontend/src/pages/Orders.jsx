@@ -24,6 +24,7 @@ export default function Orders() {
   const [error, setError] = useState("");
   const [selectedStatus, setSelectedStatus] = useState({});
   const [selectedStaff, setSelectedStaff] = useState({});
+  const [searchOrderId, setSearchOrderId] = useState("");
 
   const loadOrders = () => {
     axiosInstance
@@ -59,10 +60,24 @@ export default function Orders() {
     }
   };
 
+  const filteredOrders = orders.filter(
+    (o) => searchOrderId === "" || o.id.toString().includes(searchOrderId)
+  );
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-display text-2xl font-semibold text-ink">Orders</h1>
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Order ID..."
+          value={searchOrderId}
+          onChange={(e) => setSearchOrderId(e.target.value)}
+          className="border border-ledger-line bg-white rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-brass w-64"
+        />
       </div>
 
       {error && (
@@ -85,7 +100,7 @@ export default function Orders() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((o) => {
+            {filteredOrders.map((o) => {
               const nextOptions = STATUS_OPTIONS[o.status] || [];
               const needsStaff = selectedStatus[o.id] === "OUT_FOR_DELIVERY";
 
@@ -100,7 +115,11 @@ export default function Orders() {
                   <td className="p-3 text-sm text-slate-text">
                     {o.items?.map((item, idx) => (
                       <div key={idx}>
-                        {item.productName} × {item.quantity}
+                        {item.productName}
+                        {item.colorName && (
+                          <span className="text-brass-dark"> ({item.colorName})</span>
+                        )}
+                        {' '}× {item.quantity}
                       </div>
                     ))}
                   </td>

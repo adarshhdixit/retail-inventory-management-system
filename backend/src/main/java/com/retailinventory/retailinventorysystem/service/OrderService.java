@@ -35,6 +35,9 @@ public class OrderService {
     @Autowired
     private com.retailinventory.retailinventorysystem.repository.ProductVariantRepository variantRepository;
 
+    @Autowired
+    private SaleService saleService;
+
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO request, Long customerId) throws RazorpayException {
         double distance = com.retailinventory.retailinventorysystem.util.DistanceUtil.calculateDistanceKm(
@@ -127,7 +130,7 @@ public class OrderService {
         order.setRazorpaySignature(signature);
         order.setStatus(OrderStatus.PAID);
 
-        // Reduce stock for each item
+        // Reduce stock for each item and record as a sale
         for (OrderItem item : order.getItems()) {
             if (item.getVariant() != null) {
                 ProductVariant variant = item.getVariant();
@@ -138,6 +141,8 @@ public class OrderService {
                 product.setQuantity(product.getQuantity() - item.getQuantity());
                 productRepository.save(product);
             }
+
+            saleService.recordSaleFromOrder(item.getProduct(), item.getQuantity());
         }
 
         orderRepository.save(order);

@@ -4,6 +4,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { getCustomerLocation } from '../utils/locationCheck';
 import Header from '../components/Header';
+import Modal from '../components/Modal';
+import PageLoader from '../components/PageLoader';
+import ErrorState from '../components/ErrorState';
+import { SkeletonCard } from '../components/Skeleton';
 
 const CATEGORY_COLORS = [
   'bg-shop-primary',
@@ -14,6 +18,7 @@ const CATEGORY_COLORS = [
 
 function StoreHome() {
   const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
   const [serviceable, setServiceable] = useState(null);
   const [heroBanner, setHeroBanner] = useState(null);
   const [secondaryBanners, setSecondaryBanners] = useState([]);
@@ -21,6 +26,9 @@ function StoreHome() {
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
   const [selectedColors, setSelectedColors] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
+  const [locationBlockedModal, setLocationBlockedModal] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [pageError, setPageError] = useState(false);
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
 
   const activeCategoryId = searchParams.get('category');
@@ -43,30 +51,46 @@ function StoreHome() {
 
   useEffect(() => {
     setSubCategoryFilter('');
+    setProductsLoading(true);
     if (activeCategoryId) {
       publicApi.get(`/products/by-category/${activeCategoryId}`).then((res) => {
         setProducts(res.data.content || res.data);
+        setProductsLoading(false);
       });
     } else {
       publicApi.get('/products').then((res) => {
         setProducts(res.data.content || res.data);
+        setProductsLoading(false);
       });
     }
   }, [activeCategoryId]);
 
-  useEffect(() => {
-    publicApi
-      .get('/banners/active')
-      .then((res) => {
-        const banners = res.data;
+  const loadInitialData = () => {
+    setPageLoading(true);
+    setPageError(false);
+
+    Promise.all([
+      publicApi.get('/banners/active').catch(() => ({ data: [] })),
+      publicApi.get('/categories'),
+    ])
+      .then(([bannersRes, categoriesRes]) => {
+        const banners = bannersRes.data;
         setHeroBanner(banners.find((b) => b.type === 'HERO') || null);
         setSecondaryBanners(banners.filter((b) => b.type === 'SECONDARY').slice(0, 4));
+        setCategories(categoriesRes.data);
+        setPageLoading(false);
       })
-      .catch(() => {});
-
-    publicApi.get('/categories').then((res) => setCategories(res.data));
+      .catch(() => {
+        setPageError(true);
+        setPageLoading(false);
+      });
 
     checkLocation();
+  };
+
+  useEffect(() => {
+    loadInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkLocation = () => {
@@ -82,11 +106,7 @@ function StoreHome() {
       })
       .catch((error) => {
         if (error.code === 1) {
-          alert(
-            "Location is blocked for this site. Please enable it manually:\n\n" +
-            "Click the padlock icon next to the website address → Site settings → Location → Allow.\n\n" +
-            "Then click 'Enable Location' again."
-          );
+          setLocationBlockedModal(true);
         }
         setServiceable('unknown');
       });
@@ -111,6 +131,16 @@ function StoreHome() {
   const displayedProducts = subCategoryFilter
     ? products.filter((p) => p.subCategory === subCategoryFilter)
     : products;
+
+  if (pageLoading) return <PageLoader />;
+  if (pageError) {
+    return (
+      <ErrorState
+        message="We couldn't load the store right now. Please check your connection and try again."
+        onRetry={loadInitialData}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-shop-bg">
@@ -222,11 +252,15 @@ function StoreHome() {
                   className="flex flex-col items-center gap-2 group"
                 >
                   <div
-                    className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-white text-2xl md:text-3xl font-bold ${
-                      CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
-                    } group-hover:scale-105 transition`}
+                    className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex items-center justify-center text-white text-2xl md:text-3xl font-bold group-hover:scale-105 transition ${
+                      cat.imageUrl ? '' : CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
+                    }`}
                   >
-                    {cat.name.charAt(0).toUpperCase()}
+                    {cat.imageUrl ? (
+                      <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                    ) : (
+                      cat.name.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <span className="text-xs text-shop-text text-center leading-tight">
                     {cat.name}
@@ -258,101 +292,144 @@ function StoreHome() {
             )}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-              {displayedProducts.map((product) => {
-                const inStockVariants = (product.variants || []).filter((v) => v.quantity > 0);
-                const currentVariant =
-                  inStockVariants.length > 0
-                    ? inStockVariants.find((v) => v.id === selectedColors[product.id]) ||
-                      inStockVariants[0]
-                    : null;
-                const currentVariantId = currentVariant?.id ?? null;
-                const cartQty = getCartQuantity(product.id, currentVariantId);
+              {productsLoading ? (
+                Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+              ) : (
+                displayedProducts.map((product) => {
+                  const inStockVariants = (product.variants || []).filter((v) => v.quantity > 0);
+                  const currentVariant =
+                    inStockVariants.length > 0
+                      ? inStockVariants.find((v) => v.id === selectedColors[product.id]) ||
+                        inStockVariants[0]
+                      : null;
+                  const currentVariantId = currentVariant?.id ?? null;
+                  const cartQty = getCartQuantity(product.id, currentVariantId);
 
-                return (
-                  <div
-                    key={product.id}
-                    className="bg-shop-card rounded-2xl p-4 shadow-sm hover:shadow-md transition"
-                  >
-                    <Link to={`/product/${product.id}`}>
-                      <h2 className="font-shop-display font-semibold text-shop-text mb-1">
-                        {product.name}
-                      </h2>
-                      <p className="font-mono text-shop-primary-dark font-bold text-sm mb-2">
-                        ₹{product.price}
-                      </p>
-                    </Link>
-
-                    {inStockVariants.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {inStockVariants.map((v) => (
-                          <button
-                            key={v.id}
-                            onClick={() =>
-                              setSelectedColors({ ...selectedColors, [product.id]: v.id })
-                            }
-                            className={`text-[10px] px-2 py-1 rounded-full border transition ${
-                              currentVariantId === v.id
-                                ? 'border-shop-primary bg-shop-primary/10 text-shop-primary-dark font-semibold'
-                                : 'border-shop-highlight/20 text-shop-highlight'
-                            }`}
-                          >
-                            {v.colorName}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {cartQty === 0 ? (
-                      <button
-                        onClick={() => addToCart(product, 1, currentVariant)}
-                        disabled={serviceable === false}
-                        className={`w-full py-2 rounded-full text-sm font-semibold text-white transition ${
-                          serviceable === false
-                            ? 'bg-gray-300 cursor-not-allowed'
-                            : 'bg-shop-text hover:bg-shop-primary'
-                        }`}
-                      >
-                        Add to Cart
-                      </button>
-                    ) : (
-                      <div className="w-full flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-shop-primary-dark bg-shop-primary/10 px-3 py-2 rounded-full whitespace-nowrap">
-                          In Cart
-                        </span>
-                        <div className="flex items-center bg-[#00A7E1] rounded-full overflow-hidden">
-                          <button
-                            onClick={() =>
-                              handleDecrement(product.id, currentVariantId, cartQty)
-                            }
-                            className="px-3 py-1.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1]"
-                          >
-                            −
-                          </button>
-                          <span className="text-white font-mono font-semibold text-sm px-1">
-                            {cartQty}
+                  return (
+                    <div
+                      key={product.id}
+                      className="relative bg-shop-card rounded-2xl p-4 shadow-sm hover:shadow-md transition"
+                    >
+                      {(product.quantity === 0 || product.deliverable === false) && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 rounded-2xl">
+                          <span className="bg-shop-text text-white text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-full -rotate-6 shadow-md">
+                            {product.quantity === 0 ? 'Out of Stock' : 'Non Deliverable'}
                           </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(product.id, currentVariantId, cartQty + 1)
-                            }
-                            className="px-3 py-1.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1]"
-                          >
-                            +
-                          </button>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      )}
+
+                      <Link to={`/product/${product.id}`}>
+                        <h2 className="font-shop-display font-semibold text-shop-text mb-1">
+                          {product.name}
+                        </h2>
+                        <p className="font-mono text-shop-primary-dark font-bold text-sm mb-2">
+                          ₹{product.price}
+                        </p>
+                      </Link>
+
+                      {inStockVariants.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {inStockVariants.map((v) => (
+                            <button
+                              key={v.id}
+                              onClick={() =>
+                                setSelectedColors({ ...selectedColors, [product.id]: v.id })
+                              }
+                              className={`text-[10px] px-2 py-1 rounded-full border transition ${
+                                currentVariantId === v.id
+                                  ? 'border-shop-primary bg-shop-primary/10 text-shop-primary-dark font-semibold'
+                                  : 'border-shop-highlight/20 text-shop-highlight'
+                              }`}
+                            >
+                              {v.colorName}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {cartQty === 0 ? (
+                        <button
+                          onClick={() => addToCart(product, 1, currentVariant)}
+                          disabled={
+                            serviceable === false ||
+                            product.quantity === 0 ||
+                            product.deliverable === false
+                          }
+                          className={`w-full py-2 rounded-full text-sm font-semibold text-white transition ${
+                            serviceable === false ||
+                            product.quantity === 0 ||
+                            product.deliverable === false
+                              ? 'bg-gray-300 cursor-not-allowed'
+                              : 'bg-shop-text hover:bg-shop-primary'
+                          }`}
+                        >
+                          {product.quantity === 0
+                            ? 'Out of Stock'
+                            : product.deliverable === false
+                            ? 'Non Deliverable'
+                            : 'Add to Cart'}
+                        </button>
+                      ) : (
+                        <div className="w-full flex items-center justify-between gap-2">
+                          <span className="text-xs font-semibold text-shop-primary-dark bg-shop-primary/10 px-3 py-2 rounded-full whitespace-nowrap">
+                            In Cart
+                          </span>
+                          <div className="flex items-center bg-[#00A7E1] rounded-full overflow-hidden">
+                            <button
+                              onClick={() =>
+                                handleDecrement(product.id, currentVariantId, cartQty)
+                              }
+                              className="px-3 py-1.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1]"
+                            >
+                              −
+                            </button>
+                            <span className="text-white font-mono font-semibold text-sm px-1">
+                              {cartQty}
+                            </span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(product.id, currentVariantId, cartQty + 1)
+                              }
+                              className="px-3 py-1.5 text-white text-lg font-bold transition hover:bg-[#00A7E1] active:bg-[#00A7E1]"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
 
-            {displayedProducts.length === 0 && (
+            {!productsLoading && displayedProducts.length === 0 && (
               <p className="text-shop-highlight text-sm mt-4">No products found.</p>
             )}
           </>
         )}
       </div>
+
+      <Modal
+        isOpen={locationBlockedModal}
+        onClose={() => setLocationBlockedModal(false)}
+        title="Location Access Needed"
+      >
+        <p className="text-sm text-shop-text mb-4">
+          We need your location to check if we deliver to your area. It looks like location access is currently blocked for this site.
+        </p>
+        <ol className="text-sm text-shop-highlight list-decimal list-inside space-y-2 mb-6">
+          <li>Click the padlock icon next to the website address</li>
+          <li>Go to Site settings → Location → Allow</li>
+          <li>Come back and click "Enable Location" again</li>
+        </ol>
+        <button
+          onClick={() => setLocationBlockedModal(false)}
+          className="w-full bg-shop-primary text-white py-2.5 rounded-full font-semibold hover:bg-shop-primary-dark transition"
+        >
+          Got it
+        </button>
+      </Modal>
     </div>
   );
 }

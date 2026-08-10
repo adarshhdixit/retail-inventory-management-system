@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import api from '../api/axiosInstance';
 import { getCustomerLocation } from '../utils/locationCheck';
 import Header from '../components/Header';
+import { useToast } from '../context/ToastContext';
 
 function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -16,6 +17,7 @@ function Checkout() {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   useEffect(() => {
     api.get('/addresses').then((res) => {
@@ -104,6 +106,7 @@ function Checkout() {
             razorpaySignature: response.razorpay_signature,
           });
           clearCart();
+          showToast('Order placed successfully!', 'success');
           navigate('/order-success');
         },
         prefill: { contact: phone },
@@ -115,6 +118,7 @@ function Checkout() {
     } catch (err) {
       const message = err.response?.data?.message || 'Something went wrong placing your order.';
       setError(message);
+      showToast(message, 'error');
     } finally {
       setLoading(false);
     }

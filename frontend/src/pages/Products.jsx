@@ -26,6 +26,7 @@ export default function Products() {
     categoryId: "",
     supplierId: "",
     subCategory: "",
+    deliverable: true,
   });
   const [deleteId, setDeleteId] = useState(null);
 
@@ -97,6 +98,7 @@ export default function Products() {
       categoryId: "",
       supplierId: "",
       subCategory: "",
+      deliverable: true,
     });
     setVariants([]);
     setModalOpen(true);
@@ -112,6 +114,7 @@ export default function Products() {
       categoryId: p.categoryId || "",
       supplierId: p.supplierId || "",
       subCategory: p.subCategory || "",
+      deliverable: p.deliverable !== false,
     });
     setVariants(p.variants || []);
     setModalOpen(true);
@@ -142,6 +145,7 @@ export default function Products() {
       category: form.categoryId ? { id: parseInt(form.categoryId) } : null,
       supplier: form.supplierId ? { id: parseInt(form.supplierId) } : null,
       subCategory: form.subCategory || null,
+      deliverable: form.deliverable,
     };
     try {
       if (editingId) {
@@ -510,6 +514,14 @@ export default function Products() {
             onChange={(e) => setForm({ ...form, subCategory: e.target.value })}
             className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
           />
+          <label className="flex items-center gap-2 mb-6 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={form.deliverable}
+              onChange={(e) => setForm({ ...form, deliverable: e.target.checked })}
+            />
+            Deliverable (uncheck for oversized/bulky items)
+          </label>
 
           {editingId ? (
             <div className="mb-6 border-t border-ledger-line pt-4">

@@ -119,4 +119,11 @@ public class SaleService {
 
         return result;
     }
+    public void recordSaleFromOrder(Product product, Integer quantity) {
+        Sale sale = new Sale();
+        sale.setProduct(product);
+        sale.setQuantitySold(quantity);
+        sale.setSaleDate(LocalDateTime.now());
+        saleRepository.save(sale);
+    }
 }

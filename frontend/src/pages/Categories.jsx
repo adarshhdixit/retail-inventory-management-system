@@ -9,7 +9,7 @@ export default function Categories() {
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ name: "", description: "" });
+  const [form, setForm] = useState({ name: "", description: "", imageUrl: "" });
   const [deleteId, setDeleteId] = useState(null);
 
   const loadCategories = () => {
@@ -25,13 +25,17 @@ export default function Categories() {
 
   const openCreateModal = () => {
     setEditingId(null);
-    setForm({ name: "", description: "" });
+    setForm({ name: "", description: "", imageUrl: "" });
     setModalOpen(true);
   };
 
   const openEditModal = (category) => {
     setEditingId(category.id);
-    setForm({ name: category.name, description: category.description || "" });
+    setForm({
+      name: category.name,
+      description: category.description || "",
+      imageUrl: category.imageUrl || "",
+    });
     setModalOpen(true);
   };
 
@@ -82,6 +86,7 @@ export default function Categories() {
         <table className="w-full text-left">
           <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
             <tr>
+              <th className="p-3 font-semibold w-16">Image</th>
               <th className="p-3 font-semibold">Name</th>
               <th className="p-3 font-semibold">Description</th>
               <th className="p-3 font-semibold w-32">Actions</th>
@@ -90,6 +95,19 @@ export default function Categories() {
           <tbody>
             {categories.map((cat) => (
               <tr key={cat.id} className="border-t border-ledger-line">
+                <td className="p-3">
+                  {cat.imageUrl ? (
+                    <img
+                      src={cat.imageUrl}
+                      alt={cat.name}
+                      className="w-10 h-10 rounded-sm object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-sm bg-ledger flex items-center justify-center text-xs text-slate-text">
+                      —
+                    </div>
+                  )}
+                </td>
                 <td className="p-3 text-ink text-sm">{cat.name}</td>
                 <td className="p-3 text-slate-text text-sm">{cat.description}</td>
                 <td className="p-3 flex gap-3">
@@ -130,6 +148,14 @@ export default function Categories() {
           <textarea
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
+          />
+          <label className="block text-sm font-medium text-ink mb-1">Image URL</label>
+          <input
+            type="text"
+            value={form.imageUrl}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            placeholder="https://..."
             className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-6 text-sm focus:outline-none focus:border-brass"
           />
           <button

@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Positive;
+
 
 @Entity
 @Table(name = "products")
@@ -28,7 +30,7 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
-    @Positive(message = "Quantity must be greater than zero")
+    @PositiveOrZero(message = "Quantity cannot be negative")
     @Column(nullable = false)
     private Integer quantity;
 
@@ -39,4 +41,8 @@ public class Product {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
     private String subCategory;
+
+    @Column(nullable = false)
+    private Boolean active = Boolean.TRUE;
+    private Boolean deliverable = Boolean.TRUE;
 }

@@ -25,4 +25,7 @@ public class ProductVariant {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
+    private Boolean active = Boolean.TRUE;
 }

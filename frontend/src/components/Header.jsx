@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import AccountMenu from './AccountMenu';
@@ -13,8 +13,10 @@ export default function Header() {
   const [addressOpen, setAddressOpen] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [cartBounce, setCartBounce] = useState(false);
   const { cartItems } = useCart();
   const totalItemsInCart = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const prevCountRef = useRef(totalItemsInCart);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -36,15 +38,24 @@ export default function Header() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (totalItemsInCart > prevCountRef.current) {
+      setCartBounce(true);
+      const timeout = setTimeout(() => setCartBounce(false), 400);
+      return () => clearTimeout(timeout);
+    }
+    prevCountRef.current = totalItemsInCart;
+  }, [totalItemsInCart]);
+
   return (
     <header className="bg-shop-card border-b border-shop-highlight/10 px-6 py-5 sticky top-0 z-30">
       <div className="flex items-center gap-4 flex-wrap">
         <Link to="/store" className="flex items-center mr-4 shrink-0">
           <span
-            className="text-4xl md:text-5xl tracking-wide"
+            className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent"
             style={{
               fontFamily: 'var(--font-shop-logo)',
-              color: '#16476A',
+              backgroundImage: 'linear-gradient(135deg, #81BFBC 0%, #C9D5C3 100%)',
             }}
           >
             DXT
@@ -130,7 +141,9 @@ export default function Header() {
 
         <Link
           to="/cart"
-          className="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-shop-text hover:bg-shop-primary transition text-white"
+          className={`relative shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-shop-text hover:bg-shop-primary transition text-white ${
+            cartBounce ? 'animate-bounce' : ''
+          }`}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path

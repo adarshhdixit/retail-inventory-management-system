@@ -21,4 +21,5 @@ public class ProductResponseDTO {
     private Long supplierId;
     private String subCategory;
     private List<ProductVariantResponseDTO> variants;
+    private Boolean deliverable;
 }

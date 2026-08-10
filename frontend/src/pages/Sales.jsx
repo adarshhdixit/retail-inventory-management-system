@@ -10,6 +10,11 @@ export default function Sales() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({ productId: "", quantitySold: "" });
 
+  const [filterMode, setFilterMode] = useState("none"); // 'none' | 'single' | 'range'
+  const [singleDate, setSingleDate] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
   const loadSales = () => {
     axiosInstance
       .get("/sales")
@@ -46,6 +51,32 @@ export default function Sales() {
     }
   };
 
+  const clearDateFilter = () => {
+    setFilterMode("none");
+    setSingleDate("");
+    setFromDate("");
+    setToDate("");
+  };
+
+  const filteredSales = sales.filter((s) => {
+    if (filterMode === "none") return true;
+
+    const saleDate = new Date(s.saleDate);
+    const saleDateStr = saleDate.toISOString().split("T")[0];
+
+    if (filterMode === "single") {
+      return singleDate === "" || saleDateStr === singleDate;
+    }
+
+    if (filterMode === "range") {
+      if (fromDate && saleDateStr < fromDate) return false;
+      if (toDate && saleDateStr > toDate) return false;
+      return true;
+    }
+
+    return true;
+  });
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
@@ -58,6 +89,65 @@ export default function Sales() {
         </button>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <select
+          value={filterMode}
+          onChange={(e) => {
+            setFilterMode(e.target.value);
+            setSingleDate("");
+            setFromDate("");
+            setToDate("");
+          }}
+          className="border border-ledger-line bg-white rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-brass"
+        >
+          <option value="none">No date filter</option>
+          <option value="single">Specific date</option>
+          <option value="range">Date range</option>
+        </select>
+
+        {filterMode === "single" && (
+          <input
+            type="date"
+            value={singleDate}
+            onChange={(e) => setSingleDate(e.target.value)}
+            className="border border-ledger-line bg-white rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-brass"
+          />
+        )}
+
+        {filterMode === "range" && (
+          <>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="border border-ledger-line bg-white rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-brass"
+            />
+            <span className="text-slate-text text-sm">to</span>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="border border-ledger-line bg-white rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-brass"
+            />
+          </>
+        )}
+
+        {filterMode !== "none" && (
+          <button
+            onClick={clearDateFilter}
+            className="text-sm text-brass-dark hover:underline"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div className="bg-stamp/10 text-stamp p-3 rounded-sm mb-4 text-sm">
+          {error}
+        </div>
+      )}
+
       <div className="bg-white rounded-sm border border-ledger-line overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-ledger text-ink text-xs uppercase tracking-wide">
@@ -69,7 +159,7 @@ export default function Sales() {
             </tr>
           </thead>
           <tbody>
-            {sales.map((s) => (
+            {filteredSales.map((s) => (
               <tr key={s.id} className="border-t border-ledger-line">
                 <td className="p-3 text-ink text-sm">{s.productName}</td>
                 <td className="p-3 font-mono text-sm text-ink">{s.quantitySold}</td>
@@ -83,6 +173,10 @@ export default function Sales() {
             ))}
           </tbody>
         </table>
+
+        {filteredSales.length === 0 && (
+          <p className="p-4 text-slate-text text-sm">No sales found for this date filter.</p>
+        )}
       </div>
 
       <Modal

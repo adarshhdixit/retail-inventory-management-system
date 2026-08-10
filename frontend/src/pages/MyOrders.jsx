@@ -45,7 +45,42 @@ function MyOrders() {
         {error && <p className="text-shop-error">{error}</p>}
 
         {!loading && !error && orders.length === 0 && (
-          <p className="text-shop-highlight">You haven't placed any orders yet.</p>
+          <div className="flex flex-col items-center text-center py-16">
+            <svg width="180" height="160" viewBox="0 0 180 160" className="mb-4">
+              <circle cx="90" cy="80" r="70" fill="#00A7E1" opacity="0.06" />
+
+              <path
+                d="M40 40 L90 32 L140 40 L140 130 L90 122 L40 130 Z"
+                fill="none"
+                stroke="#00A7E1"
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              <line x1="90" y1="32" x2="90" y2="122" stroke="#00A7E1" strokeWidth="2.5" opacity="0.5" />
+
+              <line x1="50" y1="58" x2="80" y2="55" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+              <line x1="50" y1="72" x2="80" y2="70" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+              <line x1="50" y1="86" x2="76" y2="84" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+
+              <line x1="100" y1="55" x2="130" y2="58" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+              <line x1="100" y1="70" x2="130" y2="72" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+              <line x1="104" y1="84" x2="130" y2="86" stroke="#00A7E1" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
+
+              <g transform="translate(60, 95) rotate(-18)">
+                <rect x="0" y="0" width="55" height="7" rx="3.5" fill="none" stroke="#00A7E1" strokeWidth="2.2" />
+                <path d="M55 0 L64 3.5 L55 7 Z" fill="#00A7E1" opacity="0.5" />
+                <circle cx="6" cy="3.5" r="2" fill="#00A7E1" opacity="0.6" />
+              </g>
+
+              <ellipse cx="70" cy="112" rx="3.5" ry="2" fill="#00A7E1" opacity="0.3" />
+            </svg>
+            <h2 className="font-shop-display text-lg font-bold text-shop-text mb-1">
+              No orders yet
+            </h2>
+            <p className="text-sm text-shop-highlight max-w-xs">
+              Your past orders will show up here once you place one.
+            </p>
+          </div>
         )}
 
         {!loading && !error && orders.length > 0 && (

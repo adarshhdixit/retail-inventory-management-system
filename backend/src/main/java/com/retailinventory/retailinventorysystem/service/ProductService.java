@@ -30,9 +30,10 @@ public class ProductService {
         dto.setSupplierName(product.getSupplier() != null ? product.getSupplier().getName() : null);
         dto.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : null);
         dto.setSupplierId(product.getSupplier() != null ? product.getSupplier().getId() : null);
+        dto.setDeliverable(product.getDeliverable());
         dto.setSubCategory(product.getSubCategory());
         dto.setVariants(
-                variantRepository.findByProductId(product.getId()).stream()
+                variantRepository.findByProductIdAndActiveTrue(product.getId()).stream()
                         .map(v -> {
                             ProductVariantResponseDTO vDto = new ProductVariantResponseDTO();
                             vDto.setId(v.getId());
@@ -46,19 +47,19 @@ public class ProductService {
     }
 
     public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable).map(this::convertToDTO);
+        return productRepository.findByActiveTrue(pageable).map(this::convertToDTO);
     }
 
     public Page<ProductResponseDTO> getLowStockProducts(Integer threshold, Pageable pageable) {
-        return productRepository.findByQuantityLessThan(threshold, pageable).map(this::convertToDTO);
+        return productRepository.findByQuantityLessThanAndActiveTrue(threshold, pageable).map(this::convertToDTO);
     }
 
     public Page<ProductResponseDTO> getProductsByCategory(Long categoryId, Pageable pageable) {
-        return productRepository.findByCategoryId(categoryId, pageable).map(this::convertToDTO);
+        return productRepository.findByCategoryIdAndActiveTrue(categoryId, pageable).map(this::convertToDTO);
     }
 
     public Page<ProductResponseDTO> searchProductsByName(String keyword, Pageable pageable) {
-        return productRepository.findByNameContainingIgnoreCase(keyword, pageable).map(this::convertToDTO);
+        return productRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword, pageable).map(this::convertToDTO);
     }
 
     public ProductResponseDTO getProductById(Long id) {
@@ -68,6 +69,9 @@ public class ProductService {
     }
 
     public ProductResponseDTO createProduct(Product product) {
+        if (product.getActive() == null){
+            product.setActive(true);
+        }
         Product savedProduct = productRepository.save(product);
         return convertToDTO(savedProduct);
     }
@@ -82,12 +86,17 @@ public class ProductService {
         existingProduct.setQuantity(updatedProduct.getQuantity());
         existingProduct.setCategory(updatedProduct.getCategory());
         existingProduct.setSupplier(updatedProduct.getSupplier());
+        existingProduct.setSubCategory(updatedProduct.getSubCategory());
+        existingProduct.setDeliverable(updatedProduct.getDeliverable());
 
         Product savedProduct = productRepository.save(existingProduct);
         return convertToDTO(savedProduct);
     }
 
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
+        product.setActive(false);
+        productRepository.save(product);
     }
 }

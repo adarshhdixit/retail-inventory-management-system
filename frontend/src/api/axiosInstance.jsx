@@ -5,7 +5,11 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const token = isAdminRoute
+    ? localStorage.getItem("adminToken")
+    : localStorage.getItem("token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -20,7 +20,7 @@ public class ProductVariantService {
     private ProductRepository productRepository;
 
     public List<ProductVariant> getVariantsForProduct(Long productId) {
-        return variantRepository.findByProductId(productId);
+        return variantRepository.findByProductIdAndActiveTrue(productId);
     }
 
     public ProductVariant addVariant(Long productId, String colorName, Integer quantity) {
@@ -46,9 +46,9 @@ public class ProductVariantService {
     }
 
     public void deleteVariant(Long variantId) {
-        if (!variantRepository.existsById(variantId)) {
-            throw new ResourceNotFoundException("Variant not found");
-        }
-        variantRepository.deleteById(variantId);
+        ProductVariant variant = variantRepository.findById(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Variant not found"));
+        variant.setActive(false);
+        variantRepository.save(variant);
     }
 }
