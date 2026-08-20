@@ -10,6 +10,7 @@ import ErrorState from '../components/ErrorState';
 import ScribbleHeading from '../components/ScribbleHeading';
 import { SkeletonCard } from '../components/Skeleton';
 
+
 const CATEGORY_COLORS = [
   'bg-shop-primary',
   'bg-shop-accent',
@@ -35,6 +36,7 @@ function StoreHome() {
   const [heroBanners, setHeroBanners] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [secondaryBanners, setSecondaryBanners] = useState([]);
+  const [stripBanner, setStripBanner] = useState(null);
   const [categories, setCategories] = useState([]);
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
   const [selectedColors, setSelectedColors] = useState({});
@@ -96,6 +98,7 @@ function StoreHome() {
         const banners = bannersRes.data;
         setHeroBanners(banners.filter((b) => b.type === 'HERO'));
         setSecondaryBanners(banners.filter((b) => b.type === 'SECONDARY').slice(0, 4));
+        setStripBanner(banners.find((b) => b.type === 'STRIP') || null);
         setCategories(categoriesRes.data);
         setPageLoading(false);
       })
@@ -283,44 +286,49 @@ function StoreHome() {
           </div>
         )}
 
-        {!activeCategoryId && !activeKeyword && (
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <Link to="/hot-selling" className="relative rounded-2xl overflow-hidden h-32 text-left block">
-              <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
-                🔥
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <div className="absolute top-0 left-0 bg-shop-error text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
-                HOT SELLING
-              </div>
-              <div className="relative h-full flex flex-col justify-end p-4">
-                <span className="text-white font-shop-display font-bold text-base">Hot Selling</span>
-                <span className="text-white/80 text-xs">Most loved this week</span>
-              </div>
-            </Link>
-
-            <Link to="/newly-added" className="relative rounded-2xl overflow-hidden h-32 text-left block">
-              <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
-                ✨
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <div className="absolute top-0 left-0 bg-shop-primary text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
-                NEWLY ADDED
-              </div>
-              <div className="relative h-full flex flex-col justify-end p-4">
-                <span className="text-white font-shop-display font-bold text-base">Newly Added</span>
-                <span className="text-white/80 text-xs">Fresh stock, just in</span>
-              </div>
-            </Link>
-          </div>
-        )}
-
         {categories.length > 0 && !activeCategoryId && !activeKeyword && (
           <div>
-            <ScribbleHeading className="font-shop-display text-xl font-bold text-shop-text mb-4 mt-8 block">
+            <ScribbleHeading className="font-shop-display text-xl font-bold text-shop-text mb-4 mt-0 block">
               Shop By Categories
             </ScribbleHeading>
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 md:-mx-8 md:px-8">
+
+            {/* Mobile: 3x3 grid */}
+            <div className="grid grid-cols-3 gap-3 md:hidden">
+              {categories.slice(0, 8).map((cat, idx) => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategoryClick(cat)}
+                  className="flex flex-col items-center"
+                >
+                  <div className="w-full">
+                    <div
+                      className={`w-full aspect-square overflow-hidden flex items-center justify-center text-white text-2xl font-bold ${
+                        cat.imageUrl ? '' : CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
+                      }`}
+                    >
+                      {cat.imageUrl ? (
+                        <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                      ) : (
+                        cat.name.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-xs text-shop-text text-center leading-tight mt-1.5">
+                    {cat.name}
+                  </span>
+                </button>
+              ))}
+
+              <Link to="/categories" className="flex flex-col items-center">
+                <div className="bg-shop-highlight/10 rounded-2xl shadow-sm hover:shadow-md transition w-full aspect-square flex flex-col items-center justify-center gap-1">
+                  <span className="text-shop-primary text-lg">→</span>
+                  <span className="text-xs text-shop-primary font-semibold">View all</span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Desktop: horizontal scroll row */}
+            <div className="hidden md:flex gap-3 overflow-x-auto pb-2 -mx-8 px-8">
               {categories.slice(0, 7).map((cat, idx) => (
                 <button
                   key={cat.id}
@@ -356,6 +364,40 @@ function StoreHome() {
           </div>
         )}
 
+
+
+        {!activeCategoryId && !activeKeyword && (
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <Link to="/hot-selling" className="relative rounded-2xl overflow-hidden h-32 text-left block">
+                      <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
+                        🔥
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div className="absolute top-0 left-0 bg-shop-error text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
+                        HOT SELLING
+                      </div>
+                      <div className="relative h-full flex flex-col justify-end p-4">
+                        <span className="text-white font-shop-display font-bold text-base">Hot Selling</span>
+                        <span className="text-white/80 text-xs">Most loved this week</span>
+                      </div>
+                    </Link>
+
+                    <Link to="/newly-added" className="relative rounded-2xl overflow-hidden h-32 text-left block">
+                      <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
+                        ✨
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div className="absolute top-0 left-0 bg-shop-primary text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
+                        NEWLY ADDED
+                      </div>
+                      <div className="relative h-full flex flex-col justify-end p-4">
+                        <span className="text-white font-shop-display font-bold text-base">Newly Added</span>
+                        <span className="text-white/80 text-xs">Fresh stock, just in</span>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+
         {secondaryBanners.length > 0 && !activeCategoryId && !activeKeyword && (
           <div>
             <ScribbleHeading className="font-shop-display text-xl font-bold text-shop-text mb-4 mt-8 block">
@@ -390,68 +432,6 @@ function StoreHome() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {!activeCategoryId && !activeKeyword && (
-          <div className="bg-shop-card rounded-2xl p-6 md:p-8 mb-8 mt-8">
-            <div className="text-center mb-6">
-              <h2 className="font-shop-display text-xl font-bold text-shop-text mb-1">
-                Why Shop With Us
-              </h2>
-              <p className="text-sm text-shop-highlight">
-                Simple shopping. Genuine products. Real service.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
-              <div className="text-center">
-                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
-                  <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-                </svg>
-                <p className="text-xs font-bold text-shop-text mb-1">Fast Delivery</p>
-                <p className="text-[10px] text-shop-highlight leading-relaxed">At your door in 15-20 mins.</p>
-              </div>
-
-              <div className="text-center">
-                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" />
-                </svg>
-                <p className="text-xs font-bold text-shop-text mb-1">Secure Payments</p>
-                <p className="text-[10px] text-shop-highlight leading-relaxed">Safe &amp; trusted checkout.</p>
-              </div>
-
-              <div className="text-center">
-                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
-                  <path d="M3 9l1-5h16l1 5M4 9v10h16V9M4 9h16M9 21v-6h6v6" />
-                </svg>
-                <p className="text-xs font-bold text-shop-text mb-1">Easy Pickup</p>
-                <p className="text-[10px] text-shop-highlight leading-relaxed">Ready in 10 min, saves time.</p>
-              </div>
-
-              <div className="text-center">
-                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
-                  <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-xs font-bold text-shop-text mb-1">Quality Checked</p>
-                <p className="text-[10px] text-shop-highlight leading-relaxed">Checked before it ships.</p>
-              </div>
-
-              <div className="text-center">
-                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
-                  <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
-                </svg>
-                <p className="text-xs font-bold text-shop-text mb-1">Here to Help</p>
-                <p className="text-[10px] text-shop-highlight leading-relaxed">Questions? Just message us.</p>
-              </div>
-            </div>
-
-            <div className="border-t border-shop-highlight/10 pt-4 text-center">
-              <p className="text-sm text-shop-text/70 italic whitespace-nowrap">
-                "We're committed to getting every order right — no mix-ups, no shortcuts."
-              </p>
             </div>
           </div>
         )}
