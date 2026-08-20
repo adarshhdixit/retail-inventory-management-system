@@ -184,20 +184,20 @@ export default function Banners() {
       >
         <form onSubmit={handleSubmit}>
           <label className="block text-sm font-medium text-ink mb-1">Title</label>
-          <input
-            type="text"
-            value={form.title}
+          <textarea
+          value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
+            rows={2}
             className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
-            required
+            placeholder="Press Enter where you want a line break"
           />
 
           <label className="block text-sm font-medium text-ink mb-1">Subtitle</label>
-          <input
-            type="text"
+          <textarea
             value={form.subtitle}
             onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
             className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
+            placeholder="Press Enter where you want a line break"
           />
 
           <label className="block text-sm font-medium text-ink mb-1">Image URL</label>

@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Modal from '../components/Modal';
 import PageLoader from '../components/PageLoader';
 import ErrorState from '../components/ErrorState';
+import ScribbleHeading from '../components/ScribbleHeading';
 import { SkeletonCard } from '../components/Skeleton';
 
 const CATEGORY_COLORS = [
@@ -16,11 +17,23 @@ const CATEGORY_COLORS = [
   'bg-shop-highlight',
 ];
 
+const QUICK_ITEMS = ['Pen', 'Pencil', 'Marker', 'Eraser', 'Sharpener', 'Highlighter', 'Notebook', 'Glue'];
+
+function chunkWords(text, wordsPerLine) {
+  if (!text) return [];
+  const words = text.split(' ');
+  const lines = [];
+  for (let i = 0; i < words.length; i += wordsPerLine) {
+    lines.push(words.slice(i, i + wordsPerLine).join(' '));
+  }
+  return lines;
+}
 function StoreHome() {
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [serviceable, setServiceable] = useState(null);
-  const [heroBanner, setHeroBanner] = useState(null);
+  const [heroBanners, setHeroBanners] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [secondaryBanners, setSecondaryBanners] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
@@ -33,6 +46,7 @@ function StoreHome() {
 
   const activeCategoryId = searchParams.get('category');
   const activeCategoryName = searchParams.get('categoryName');
+  const activeKeyword = searchParams.get('keyword');
 
   const getCartQuantity = (productId, variantId) => {
     const item = cartItems.find(
@@ -52,7 +66,12 @@ function StoreHome() {
   useEffect(() => {
     setSubCategoryFilter('');
     setProductsLoading(true);
-    if (activeCategoryId) {
+    if (activeKeyword) {
+      publicApi.get(`/products/search?keyword=${encodeURIComponent(activeKeyword)}`).then((res) => {
+        setProducts(res.data.content || res.data);
+        setProductsLoading(false);
+      });
+    } else if (activeCategoryId) {
       publicApi.get(`/products/by-category/${activeCategoryId}`).then((res) => {
         setProducts(res.data.content || res.data);
         setProductsLoading(false);
@@ -63,7 +82,7 @@ function StoreHome() {
         setProductsLoading(false);
       });
     }
-  }, [activeCategoryId]);
+  }, [activeCategoryId, activeKeyword]);
 
   const loadInitialData = () => {
     setPageLoading(true);
@@ -75,7 +94,7 @@ function StoreHome() {
     ])
       .then(([bannersRes, categoriesRes]) => {
         const banners = bannersRes.data;
-        setHeroBanner(banners.find((b) => b.type === 'HERO') || null);
+        setHeroBanners(banners.filter((b) => b.type === 'HERO'));
         setSecondaryBanners(banners.filter((b) => b.type === 'SECONDARY').slice(0, 4));
         setCategories(categoriesRes.data);
         setPageLoading(false);
@@ -180,98 +199,264 @@ function StoreHome() {
 
       <Header />
 
+      <div className="flex gap-2 overflow-x-auto px-4 md:px-8 pt-3 pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {QUICK_ITEMS.map((item) => (
+          <button
+            key={item}
+            onClick={() => setSearchParams({ keyword: item })}
+            className="shrink-0 inline-block bg-gray-100 border border-shop-highlight/15 text-shop-text text-xs font-medium px-2.5 py-1 rounded-full leading-none hover:bg-shop-primary hover:text-white hover:border-shop-primary transition whitespace-nowrap"
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+
       <div className="p-6 md:p-8">
-        {heroBanner && !activeCategoryId && (
-          <div className="relative rounded-2xl overflow-hidden mb-6 h-56 md:h-72">
-            <img
-              src={heroBanner.imageUrl}
-              alt={heroBanner.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-            <div className="relative h-full flex flex-col justify-center px-6 md:px-10 max-w-xl">
-              <h2 className="font-shop-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
-                {heroBanner.title}
-              </h2>
-              {heroBanner.subtitle && (
-                <p className="text-white/85 text-sm md:text-base mb-5">{heroBanner.subtitle}</p>
+        {heroBanners.length > 0 && !activeCategoryId && !activeKeyword && (
+          <div className="mb-6 -mx-4 md:-mx-6">
+            <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
+              <img
+                src={heroBanners[currentSlide].imageUrl}
+                alt={heroBanners[currentSlide].title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+
+              {heroBanners.length > 1 && (
+                <button
+                  onClick={() =>
+                    setCurrentSlide((prev) => (prev - 1 + heroBanners.length) % heroBanners.length)
+                  }
+                  className="absolute left-0 top-0 bottom-0 w-12 z-10 flex items-center justify-start pl-2 group"
+                >
+                  <span className="w-7 h-7 rounded-full bg-black/20 group-hover:bg-black/35 flex items-center justify-center text-white text-sm transition">
+                    ‹
+                  </span>
+                </button>
               )}
-              <button
-                onClick={() => handleBannerClick(heroBanner)}
-                className="bg-white text-shop-text px-6 py-2.5 rounded-full font-semibold text-sm w-fit hover:bg-shop-primary hover:text-white transition"
-              >
-                {heroBanner.buttonText}
-              </button>
+
+              <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-8 pb-20 max-w-xl">
+                <div>
+                  <h2 className="font-shop-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight whitespace-pre-line">
+                    {heroBanners[currentSlide].title}
+                  </h2>
+                  {heroBanners[currentSlide].subtitle && (
+                    <p className="text-white/85 text-sm md:text-base whitespace-pre-line">
+                      {heroBanners[currentSlide].subtitle}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handleBannerClick(heroBanners[currentSlide])}
+                  className="bg-[#D4A657] text-white px-4 py-1.5 rounded-full font-semibold text-xs w-fit hover:bg-[#C0954A] transition shadow-sm"
+                >
+                  {heroBanners[currentSlide].buttonText}
+                </button>
+              </div>
+
+              {heroBanners.length > 1 && (
+                <button
+                  onClick={() => setCurrentSlide((prev) => (prev + 1) % heroBanners.length)}
+                  className="absolute right-0 top-0 bottom-0 w-12 z-10 flex items-center justify-end pr-2 group"
+                >
+                  <span className="w-7 h-7 rounded-full bg-black/20 group-hover:bg-black/35 flex items-center justify-center text-white text-sm transition">
+                    ›
+                  </span>
+                </button>
+              )}
+
+              {heroBanners.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {heroBanners.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentSlide(idx)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        idx === currentSlide ? 'w-5 bg-white' : 'w-1.5 bg-white/40'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {secondaryBanners.length > 0 && !activeCategoryId && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {secondaryBanners.map((banner) => (
-              <div key={banner.id} className="relative rounded-2xl overflow-hidden h-44 md:h-48">
-                <img
-                  src={banner.imageUrl}
-                  alt={banner.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-transparent" />
-                <div className="relative h-full flex flex-col justify-between p-4">
-                  <h3 className="font-shop-display text-sm md:text-base font-bold text-white leading-tight">
-                    {banner.title}
-                  </h3>
-                  <div>
-                    {banner.subtitle && (
-                      <p className="font-bold text-gray-300/80 text-xs leading-snug mb-2">
-                        {banner.subtitle}
-                      </p>
-                    )}
-                    <button
-                      onClick={() => handleBannerClick(banner)}
-                      className="bg-white text-shop-text px-3 py-1.5 rounded-full font-semibold text-xs w-fit hover:bg-shop-primary hover:text-white transition"
-                    >
-                      {banner.buttonText}
-                    </button>
-                  </div>
-                </div>
+        {!activeCategoryId && !activeKeyword && (
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <Link to="/hot-selling" className="relative rounded-2xl overflow-hidden h-32 text-left block">
+              <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
+                🔥
               </div>
-            ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute top-0 left-0 bg-shop-error text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
+                HOT SELLING
+              </div>
+              <div className="relative h-full flex flex-col justify-end p-4">
+                <span className="text-white font-shop-display font-bold text-base">Hot Selling</span>
+                <span className="text-white/80 text-xs">Most loved this week</span>
+              </div>
+            </Link>
+
+            <Link to="/newly-added" className="relative rounded-2xl overflow-hidden h-32 text-left block">
+              <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
+                ✨
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute top-0 left-0 bg-shop-primary text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
+                NEWLY ADDED
+              </div>
+              <div className="relative h-full flex flex-col justify-end p-4">
+                <span className="text-white font-shop-display font-bold text-base">Newly Added</span>
+                <span className="text-white/80 text-xs">Fresh stock, just in</span>
+              </div>
+            </Link>
           </div>
         )}
 
-        {categories.length > 0 && !activeCategoryId && (
-          <div className="mb-8">
-            <h2 className="font-shop-display text-lg font-bold text-shop-text mb-4">
-              Shop by Category
-            </h2>
-            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-5">
-              {categories.map((cat, idx) => (
+        {categories.length > 0 && !activeCategoryId && !activeKeyword && (
+          <div>
+            <ScribbleHeading className="font-shop-display text-xl font-bold text-shop-text mb-4 mt-8 block">
+              Shop By Categories
+            </ScribbleHeading>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 md:-mx-8 md:px-8">
+              {categories.slice(0, 7).map((cat, idx) => (
                 <button
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat)}
-                  className="flex flex-col items-center gap-2 group"
+                  className="flex flex-col items-center shrink-0 w-[130px]"
                 >
-                  <div
-                    className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex items-center justify-center text-white text-2xl md:text-3xl font-bold group-hover:scale-105 transition ${
-                      cat.imageUrl ? '' : CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
-                    }`}
-                  >
-                    {cat.imageUrl ? (
-                      <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
-                    ) : (
-                      cat.name.charAt(0).toUpperCase()
-                    )}
+                  <div className="bg-shop-card rounded-2xl p-[3px] shadow-sm hover:shadow-md transition w-full">
+                    <div
+                      className={`w-full aspect-square rounded-[13px] overflow-hidden flex items-center justify-center text-white text-3xl font-bold ${
+                        cat.imageUrl ? '' : CATEGORY_COLORS[idx % CATEGORY_COLORS.length]
+                      }`}
+                    >
+                      {cat.imageUrl ? (
+                        <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                      ) : (
+                        cat.name.charAt(0).toUpperCase()
+                      )}
+                    </div>
                   </div>
-                  <span className="text-xs text-shop-text text-center leading-tight">
+                  <span className="text-xs text-shop-text text-center leading-tight mt-1.5">
                     {cat.name}
                   </span>
                 </button>
+              ))}
+
+              <Link to="/categories" className="flex flex-col items-center shrink-0 w-[130px]">
+                <div className="bg-shop-highlight/10 rounded-2xl shadow-sm hover:shadow-md transition w-full aspect-square flex flex-col items-center justify-center gap-1">
+                  <span className="text-shop-primary text-lg">→</span>
+                  <span className="text-xs text-shop-primary font-semibold">View all</span>
+                </div>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {secondaryBanners.length > 0 && !activeCategoryId && !activeKeyword && (
+          <div>
+            <ScribbleHeading className="font-shop-display text-xl font-bold text-shop-text mb-4 mt-8 block">
+              Handpicked For You
+            </ScribbleHeading>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {secondaryBanners.map((banner) => (
+                <div key={banner.id} className="relative rounded-2xl overflow-hidden h-44 md:h-48">
+                  <img
+                    src={banner.imageUrl}
+                    alt={banner.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-transparent" />
+                  <div className="relative h-full flex flex-col justify-between p-4">
+                    <h3 className="font-shop-display text-sm md:text-base font-bold text-white leading-tight">
+                      {banner.title}
+                    </h3>
+                    <div>
+                      {banner.subtitle && (
+                        <p className="font-bold text-gray-300/80 text-xs leading-snug mb-2">
+                          {banner.subtitle}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => handleBannerClick(banner)}
+                        className="bg-white text-shop-text px-3 py-1.5 rounded-full font-semibold text-xs w-fit hover:bg-shop-primary hover:text-white transition"
+                      >
+                        {banner.buttonText}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {activeCategoryId && (
+        {!activeCategoryId && !activeKeyword && (
+          <div className="bg-shop-card rounded-2xl p-6 md:p-8 mb-8 mt-8">
+            <div className="text-center mb-6">
+              <h2 className="font-shop-display text-xl font-bold text-shop-text mb-1">
+                Why Shop With Us
+              </h2>
+              <p className="text-sm text-shop-highlight">
+                Simple shopping. Genuine products. Real service.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
+              <div className="text-center">
+                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
+                  <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+                </svg>
+                <p className="text-xs font-bold text-shop-text mb-1">Fast Delivery</p>
+                <p className="text-[10px] text-shop-highlight leading-relaxed">At your door in 15-20 mins.</p>
+              </div>
+
+              <div className="text-center">
+                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
+                  <rect x="3" y="11" width="18" height="11" rx="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+                <p className="text-xs font-bold text-shop-text mb-1">Secure Payments</p>
+                <p className="text-[10px] text-shop-highlight leading-relaxed">Safe &amp; trusted checkout.</p>
+              </div>
+
+              <div className="text-center">
+                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
+                  <path d="M3 9l1-5h16l1 5M4 9v10h16V9M4 9h16M9 21v-6h6v6" />
+                </svg>
+                <p className="text-xs font-bold text-shop-text mb-1">Easy Pickup</p>
+                <p className="text-[10px] text-shop-highlight leading-relaxed">Ready in 10 min, saves time.</p>
+              </div>
+
+              <div className="text-center">
+                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
+                  <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-xs font-bold text-shop-text mb-1">Quality Checked</p>
+                <p className="text-[10px] text-shop-highlight leading-relaxed">Checked before it ships.</p>
+              </div>
+
+              <div className="text-center">
+                <svg className="w-6 h-6 mx-auto mb-2.5 text-shop-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}>
+                  <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+                </svg>
+                <p className="text-xs font-bold text-shop-text mb-1">Here to Help</p>
+                <p className="text-[10px] text-shop-highlight leading-relaxed">Questions? Just message us.</p>
+              </div>
+            </div>
+
+            <div className="border-t border-shop-highlight/10 pt-4 text-center">
+              <p className="text-sm text-shop-text/70 italic whitespace-nowrap">
+                "We're committed to getting every order right — no mix-ups, no shortcuts."
+              </p>
+            </div>
+          </div>
+        )}
+
+        {(activeCategoryId || activeKeyword) && (
           <>
             {availableSubCategories.length > 0 && (
               <div className="mb-5 flex items-center gap-3">

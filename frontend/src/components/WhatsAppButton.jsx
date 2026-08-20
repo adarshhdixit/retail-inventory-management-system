@@ -95,7 +95,7 @@ export default function WhatsAppButton() {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       style={{ left: `${position.x}px`, top: `${position.y}px`, touchAction: 'none' }}
-      className="fixed z-[90] w-14 h-14 rounded-full bg-[#25D366] shadow-lg flex items-center justify-center hover:scale-105 transition-transform cursor-grab active:cursor-grabbing"
+      className="hidden md:flex fixed z-[90] w-14 h-14 rounded-full bg-[#25D366] shadow-lg flex items-center justify-center hover:scale-105 transition-transform cursor-grab active:cursor-grabbing"
       aria-label="Chat with us on WhatsApp"
     >
       <svg viewBox="0 0 448 512" className="w-7 h-7" fill="white">

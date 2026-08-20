@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 
 @Tag(name = "4. Products", description = "Manage product inventory, stock levels, search, and filtering")
 @RestController
@@ -47,6 +48,11 @@ public class ProductController {
     @GetMapping("/search")
     public Page<ProductResponseDTO> searchProducts(@RequestParam String keyword, Pageable pageable) {
         return productService.searchProductsByName(keyword, pageable);
+    }
+
+    @GetMapping("/hot-selling")
+    public List<ProductResponseDTO> getHotSellingProducts(@RequestParam(defaultValue = "4") int limit) {
+        return productService.getHotSellingProducts(limit);
     }
 
     @PostMapping

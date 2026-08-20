@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.retailinventory.retailinventorysystem.repository.ProductVariantRepository;
 import com.retailinventory.retailinventorysystem.dto.ProductVariantResponseDTO;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -18,6 +20,21 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private ProductVariantRepository variantRepository;
+
+    @Autowired
+    private com.retailinventory.retailinventorysystem.repository.SaleRepository saleRepository;
+
+    public List<ProductResponseDTO> getHotSellingProducts(int limit) {
+        List<Object[]> results = saleRepository.findTopSellingProductIds();
+        List<ProductResponseDTO> hotSelling = new ArrayList<>();
+
+        for (Object[] row : results) {
+            if (hotSelling.size() >= limit) break;
+            Long productId = (Long) row[0];
+            productRepository.findById(productId).ifPresent(p -> hotSelling.add(convertToDTO(p)));
+        }
+        return hotSelling;
+    }
 
     private ProductResponseDTO convertToDTO(Product product) {
         ProductResponseDTO dto = new ProductResponseDTO();

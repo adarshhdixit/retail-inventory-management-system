@@ -35,9 +35,12 @@ function AccountMenu() {
     return (
       <Link
         to="/account"
-        className="bg-gray-700 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800"
+        className="flex items-center justify-center w-10 h-10 text-shop-text"
+        aria-label="Login"
       >
-        Login
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
       </Link>
     );
   }
@@ -46,38 +49,43 @@ function AccountMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-700 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800"
+        className="flex items-center justify-center w-10 h-10 rounded-full border border-shop-highlight/20 hover:border-shop-primary transition text-shop-text"
+        aria-label="Account"
       >
-        Account {isOpen ? '▲' : '▼'}
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" />
+        </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-10">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-800">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-shop-highlight/10 z-20">
+          <div className="px-4 py-3 border-b border-shop-highlight/10">
+            <p className="text-sm font-medium text-shop-text">
               {user?.name || 'Loading...'}
             </p>
-            <p className="text-xs text-gray-500">{user?.phone}</p>
+            <p className="text-xs text-shop-highlight">{user?.phone}</p>
           </div>
 
           <Link
             to="/my-orders"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            className="block px-4 py-2 text-sm text-shop-text hover:bg-shop-bg"
           >
             My Orders
           </Link>
+
           <Link
             to="/addresses"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            className="block px-4 py-2 text-sm text-shop-text hover:bg-shop-bg"
           >
             My Addresses
           </Link>
 
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+            className="w-full text-left px-4 py-2 text-sm text-shop-error hover:bg-shop-bg"
           >
             Log Out
           </button>

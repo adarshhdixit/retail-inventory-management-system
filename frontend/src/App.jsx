@@ -5,7 +5,8 @@ import { ToastProvider } from "./context/ToastContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CustomerProtectedRoute from './components/CustomerProtectedRoute';
 import WhatsAppButton from './components/WhatsAppButton';
-import StickyCartBar from './components/StickyCartBar';
+import BottomNav from './components/BottomNav';
+import Footer from './components/Footer';
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Categories from "./pages/Categories";
@@ -24,6 +25,9 @@ import Orders from './pages/Orders';
 import Staff from './pages/Staff';
 import Addresses from './pages/Addresses';
 import Banners from './pages/Banners';
+import CategoriesPage from './pages/CategoriesPage';
+import HotSellingPage from './pages/HotSellingPage';
+import NewlyAddedPage from './pages/NewlyAddedPage';
 
 function App() {
   return (
@@ -32,12 +36,15 @@ function App() {
         <ToastProvider>
           <BrowserRouter>
             <WhatsAppButton />
-            <StickyCartBar />
+            <BottomNav />
             <Routes>
               {/* Public storefront — default landing */}
               <Route path="/" element={<StoreHome />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/categories" element={<CategoriesPage />} />
+              <Route path="/hot-selling" element={<HotSellingPage />} />
+              <Route path="/newly-added" element={<NewlyAddedPage />} />
               <Route
                 path="/checkout"
                 element={
@@ -149,6 +156,7 @@ function App() {
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            <Footer />
           </BrowserRouter>
         </ToastProvider>
       </CartProvider>
