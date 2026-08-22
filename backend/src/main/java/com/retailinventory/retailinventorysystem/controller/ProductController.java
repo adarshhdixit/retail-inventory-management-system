@@ -55,6 +55,11 @@ public class ProductController {
         return productService.getHotSellingProducts(limit);
     }
 
+    @GetMapping("/popular")
+    public List<ProductResponseDTO> getPopularProducts() {
+        return productService.getPopularProducts();
+    }
+
     @PostMapping
     public ProductResponseDTO createProduct(@Valid @RequestBody Product product) {
         return productService.createProduct(product);

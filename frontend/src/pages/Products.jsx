@@ -27,6 +27,9 @@ export default function Products() {
     supplierId: "",
     subCategory: "",
     deliverable: true,
+    rating: "",
+    popular: false,
+    mrpPrice: "",
   });
   const [deleteId, setDeleteId] = useState(null);
 
@@ -99,6 +102,9 @@ export default function Products() {
       supplierId: "",
       subCategory: "",
       deliverable: true,
+      rating: "",
+      popular: false,
+      mrpPrice: "",
     });
     setVariants([]);
     setModalOpen(true);
@@ -115,6 +121,9 @@ export default function Products() {
       supplierId: p.supplierId || "",
       subCategory: p.subCategory || "",
       deliverable: p.deliverable !== false,
+      rating: p.rating ?? "",
+      popular: p.popular || false,
+      mrpPrice: p.mrpPrice ?? "",
     });
     setVariants(p.variants || []);
     setModalOpen(true);
@@ -146,6 +155,9 @@ export default function Products() {
       supplier: form.supplierId ? { id: parseInt(form.supplierId) } : null,
       subCategory: form.subCategory || null,
       deliverable: form.deliverable,
+      rating: form.rating !== "" ? parseFloat(form.rating) : null,
+      popular: form.popular,
+      mrpPrice: form.mrpPrice !== "" ? parseFloat(form.mrpPrice) : null,
     };
     try {
       if (editingId) {
@@ -471,6 +483,16 @@ export default function Products() {
             className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
             required
           />
+
+          <label className="block text-sm font-medium text-ink mb-1">MRP (optional)</label>
+          <input
+            type="number"
+            step="0.01"
+            value={form.mrpPrice}
+            onChange={(e) => setForm({ ...form, mrpPrice: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
+            placeholder="Original price, shown crossed out if higher than selling price"
+          />
           <label className="block text-sm font-medium text-ink mb-1">Quantity</label>
           <input
             type="number"
@@ -522,6 +544,35 @@ export default function Products() {
             />
             Deliverable (uncheck for oversized/bulky items)
           </label>
+
+          <label className="block text-sm font-medium text-ink mb-1">Rating (0-5)</label>
+          <input
+            type="number"
+            min="0"
+            max="5"
+            step="0.1"
+            value={form.rating}
+            onChange={(e) => setForm({ ...form, rating: e.target.value })}
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
+          />
+
+          <label className="flex items-center gap-2 mb-4 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={form.popular}
+              onChange={(e) => setForm({ ...form, popular: e.target.checked })}
+            />
+            Show in "Popular Right Now"
+          </label>
+
+          <label className="block text-sm font-medium text-ink mb-1">Image URL</label>
+          <input
+            type="text"
+            value={form.imageUrl}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            placeholder="https://..."
+            className="w-full border border-ledger-line rounded-sm px-3 py-2 mb-4 text-sm focus:outline-none focus:border-brass"
+          />
 
           {editingId ? (
             <div className="mb-6 border-t border-ledger-line pt-4">

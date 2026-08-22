@@ -226,6 +226,7 @@ export default function Banners() {
           >
             <option value="HERO">Hero (large top banner)</option>
             <option value="SECONDARY">Secondary (small promo card)</option>
+            <option value="NEED">Need (Shop by Need card)</option>
           </select>
 
           <label className="block text-sm font-medium text-ink mb-1">Links to Category</label>

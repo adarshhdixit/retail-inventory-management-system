@@ -49,6 +49,10 @@ public class ProductService {
         dto.setSupplierId(product.getSupplier() != null ? product.getSupplier().getId() : null);
         dto.setDeliverable(product.getDeliverable());
         dto.setSubCategory(product.getSubCategory());
+        dto.setRating(product.getRating());
+        dto.setPopular(product.getPopular());
+        dto.setMrpPrice(product.getMrpPrice());
+        dto.setImageUrl(product.getImageUrl());
         dto.setVariants(
                 variantRepository.findByProductIdAndActiveTrue(product.getId()).stream()
                         .map(v -> {
@@ -93,6 +97,11 @@ public class ProductService {
         return convertToDTO(savedProduct);
     }
 
+    public List<ProductResponseDTO> getPopularProducts() {
+        return productRepository.findByPopularTrueAndActiveTrue()
+                .stream().map(this::convertToDTO).collect(java.util.stream.Collectors.toList());
+    }
+
     public ProductResponseDTO updateProduct(Long id, Product updatedProduct) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));
@@ -105,6 +114,10 @@ public class ProductService {
         existingProduct.setSupplier(updatedProduct.getSupplier());
         existingProduct.setSubCategory(updatedProduct.getSubCategory());
         existingProduct.setDeliverable(updatedProduct.getDeliverable());
+        existingProduct.setRating(updatedProduct.getRating());
+        existingProduct.setPopular(updatedProduct.getPopular());
+        existingProduct.setMrpPrice(updatedProduct.getMrpPrice());
+        existingProduct.setImageUrl(updatedProduct.getImageUrl());
 
         Product savedProduct = productRepository.save(existingProduct);
         return convertToDTO(savedProduct);

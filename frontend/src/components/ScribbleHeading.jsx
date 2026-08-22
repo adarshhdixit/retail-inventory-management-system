@@ -1,4 +1,9 @@
-export default function ScribbleHeading({ children, className = '' }) {
+export default function ScribbleHeading({ children, className = '', variant = 'default' }) {
+  const paths = {
+    default: 'M5 20 C 50 5, 90 35, 140 15 C 190 -5, 230 30, 295 18',
+    alt: 'M8 15 C 60 30, 100 5, 150 22 C 200 8, 250 28, 292 12',
+  };
+
   return (
     <span className={`relative inline-block ${className}`}>
       <span className="relative z-10">{children}</span>
@@ -8,13 +13,7 @@ export default function ScribbleHeading({ children, className = '' }) {
         preserveAspectRatio="none"
         style={{ height: '60%' }}
       >
-        <path
-          d="M5 20 C 50 5, 90 35, 140 15 C 190 -5, 230 30, 295 18"
-          fill="none"
-          stroke="#2196F3"
-          strokeWidth="4"
-          strokeLinecap="round"
-        />
+        <path d={paths[variant]} fill="none" stroke="#2196F3" strokeWidth="4" strokeLinecap="round" />
       </svg>
     </span>
   );

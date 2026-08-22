@@ -45,4 +45,11 @@ public class Product {
     @Column(nullable = false)
     private Boolean active = Boolean.TRUE;
     private Boolean deliverable = Boolean.TRUE;
+
+    private Double rating;
+
+    private Boolean popular = Boolean.FALSE;
+
+    private Double mrpPrice;
+    private String imageUrl;
 }

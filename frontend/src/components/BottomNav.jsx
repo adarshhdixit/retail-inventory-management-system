@@ -93,15 +93,15 @@ export default function BottomNav() {
         <div className="flex justify-center pb-1.5">
           <Link
             to="/cart"
-            className="bg-shop-primary rounded-2xl px-3 py-1.5 flex items-center gap-1.5 shadow-md"
+            className="bg-shop-primary rounded-full px-5 py-2.5 flex items-center gap-2 shadow-xl"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4Z" />
               <path d="M3 6h18" />
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
             <span className="text-xs text-white font-medium">Cart</span>
-            <span className="bg-white text-shop-primary-dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="bg-white text-shop-primary-dark text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
               {totalItems}
             </span>
           </Link>

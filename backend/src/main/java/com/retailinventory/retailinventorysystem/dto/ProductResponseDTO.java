@@ -22,4 +22,8 @@ public class ProductResponseDTO {
     private String subCategory;
     private List<ProductVariantResponseDTO> variants;
     private Boolean deliverable;
+    private Double rating;
+    private Boolean popular;
+    private Double mrpPrice;
+    private String imageUrl;
 }

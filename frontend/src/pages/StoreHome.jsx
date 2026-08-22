@@ -1,5 +1,5 @@
 import { publicApi } from '../api/axiosInstance';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { getCustomerLocation } from '../utils/locationCheck';
@@ -9,7 +9,8 @@ import PageLoader from '../components/PageLoader';
 import ErrorState from '../components/ErrorState';
 import ScribbleHeading from '../components/ScribbleHeading';
 import { SkeletonCard } from '../components/Skeleton';
-
+import PopularProductCard from '../components/PopularProductCard';
+import NeedIcon from '../components/NeedIcon';
 
 const CATEGORY_COLORS = [
   'bg-shop-primary',
@@ -20,15 +21,30 @@ const CATEGORY_COLORS = [
 
 const QUICK_ITEMS = ['Pen', 'Pencil', 'Marker', 'Eraser', 'Sharpener', 'Highlighter', 'Notebook', 'Glue'];
 
-function chunkWords(text, wordsPerLine) {
-  if (!text) return [];
-  const words = text.split(' ');
-  const lines = [];
-  for (let i = 0; i < words.length; i += wordsPerLine) {
-    lines.push(words.slice(i, i + wordsPerLine).join(' '));
-  }
-  return lines;
+const NEED_ACCENTS = ['#16A34A', '#D97706', '#7C3AED', '#2563EB', '#DB2777', '#0891B2'];
+
+const NEED_ICON_MAP = {
+  'back to school': 'backpack',
+  'exam essentials': 'notepad',
+  'office essentials': 'briefcase',
+  'art & craft': 'palette',
+  'college essentials': 'graduationCap',
+  'projects & assignments': 'filePenLine',
+  'teacher essentials': 'whiteboard',
+  'sports & games': 'ball',
+  'writing essentials': 'pen',
+  'study essentials': 'bookOpen',
+  'gifts & journaling': 'gift',
+  'kids & creativity': 'shapes',
+  'files & organization': 'folder',
+  'printing & paper needs': 'printer',
+  'presentation & meetings': 'presentation',
+};
+
+function getNeedIcon(title) {
+  return NEED_ICON_MAP[title.toLowerCase().trim()] || 'book';
 }
+
 function StoreHome() {
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
@@ -37,6 +53,7 @@ function StoreHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [secondaryBanners, setSecondaryBanners] = useState([]);
   const [stripBanner, setStripBanner] = useState(null);
+  const [needBanners, setNeedBanners] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subCategoryFilter, setSubCategoryFilter] = useState('');
   const [selectedColors, setSelectedColors] = useState({});
@@ -45,6 +62,9 @@ function StoreHome() {
   const [pageLoading, setPageLoading] = useState(true);
   const [pageError, setPageError] = useState(false);
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
+  const [popularProducts, setPopularProducts] = useState([]);
+  const popularScrollRef = useRef(null);
+  const needScrollRef = useRef(null);
 
   const activeCategoryId = searchParams.get('category');
   const activeCategoryName = searchParams.get('categoryName');
@@ -62,6 +82,24 @@ function StoreHome() {
       removeFromCart(productId, variantId);
     } else {
       updateQuantity(productId, variantId, currentQty - 1);
+    }
+  };
+
+  const scrollPopular = (direction) => {
+    if (popularScrollRef.current) {
+      popularScrollRef.current.scrollBy({
+        left: direction === 'left' ? -300 : 300,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const scrollNeeds = (direction) => {
+    if (needScrollRef.current) {
+      needScrollRef.current.scrollBy({
+        left: direction === 'left' ? -320 : 320,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -86,6 +124,10 @@ function StoreHome() {
     }
   }, [activeCategoryId, activeKeyword]);
 
+  useEffect(() => {
+    publicApi.get('/products/popular').then((res) => setPopularProducts(res.data)).catch(() => {});
+  }, []);
+
   const loadInitialData = () => {
     setPageLoading(true);
     setPageError(false);
@@ -99,6 +141,7 @@ function StoreHome() {
         setHeroBanners(banners.filter((b) => b.type === 'HERO'));
         setSecondaryBanners(banners.filter((b) => b.type === 'SECONDARY').slice(0, 4));
         setStripBanner(banners.find((b) => b.type === 'STRIP') || null);
+        setNeedBanners(banners.filter((b) => b.type === 'NEED'));
         setCategories(categoriesRes.data);
         setPageLoading(false);
       })
@@ -217,7 +260,7 @@ function StoreHome() {
       <div className="p-6 md:p-8">
         {heroBanners.length > 0 && !activeCategoryId && !activeKeyword && (
           <div className="mb-6 -mx-4 md:-mx-6">
-            <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
+            <div className="relative rounded-2xl overflow-hidden h-64 md:h-80">
               <img
                 src={heroBanners[currentSlide].imageUrl}
                 alt={heroBanners[currentSlide].title}
@@ -292,7 +335,6 @@ function StoreHome() {
               Shop By Categories
             </ScribbleHeading>
 
-            {/* Mobile: 3x3 grid */}
             <div className="grid grid-cols-3 gap-3 md:hidden">
               {categories.slice(0, 8).map((cat, idx) => (
                 <button
@@ -327,7 +369,6 @@ function StoreHome() {
               </Link>
             </div>
 
-            {/* Desktop: horizontal scroll row */}
             <div className="hidden md:flex gap-3 overflow-x-auto pb-2 -mx-8 px-8">
               {categories.slice(0, 7).map((cat, idx) => (
                 <button
@@ -364,39 +405,156 @@ function StoreHome() {
           </div>
         )}
 
-
-
         {!activeCategoryId && !activeKeyword && (
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <Link to="/hot-selling" className="relative rounded-2xl overflow-hidden h-32 text-left block">
-                      <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
-                        🔥
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <div className="absolute top-0 left-0 bg-shop-error text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
-                        HOT SELLING
-                      </div>
-                      <div className="relative h-full flex flex-col justify-end p-4">
-                        <span className="text-white font-shop-display font-bold text-base">Hot Selling</span>
-                        <span className="text-white/80 text-xs">Most loved this week</span>
-                      </div>
-                    </Link>
+          <div className="bg-shop-primary/10 rounded-2xl px-3 py-3 flex items-center justify-between gap-1 my-6 -mx-4 md:-mx-6 shadow-md overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-col items-center gap-1.5 shrink-0 min-w-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 2L4 14h6l-1 8 9-11h-6l1-9z" />
+              </svg>
+              <span className="text-[8.5px] font-medium text-shop-text text-center whitespace-nowrap">Fast Delivery</span>
+            </div>
 
-                    <Link to="/newly-added" className="relative rounded-2xl overflow-hidden h-32 text-left block">
-                      <div className="absolute inset-0 bg-shop-highlight/10 flex items-center justify-center text-shop-text/20 text-4xl">
-                        ✨
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <div className="absolute top-0 left-0 bg-shop-primary text-white text-xs font-bold px-4 py-1.5 rounded-br-xl rounded-tl-2xl">
-                        NEWLY ADDED
-                      </div>
-                      <div className="relative h-full flex flex-col justify-end p-4">
-                        <span className="text-white font-shop-display font-bold text-base">Newly Added</span>
-                        <span className="text-white/80 text-xs">Fresh stock, just in</span>
-                      </div>
-                    </Link>
+            <div className="flex flex-col items-center gap-1.5 shrink-0 min-w-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 9V6a1 1 0 011-1h14a1 1 0 011 1v3" />
+                <path d="M3 9h18l-1 3a2 2 0 01-2 1.6V20a1 1 0 01-1 1H7a1 1 0 01-1-1v-6.4A2 2 0 014 12z" />
+                <path d="M10 21v-5h4v5" />
+              </svg>
+              <span className="text-[8.5px] font-medium text-shop-text text-center whitespace-nowrap">Store Pickup</span>
+            </div>
+
+            <div className="flex flex-col items-center gap-1.5 shrink-0 min-w-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2.5l7 3v5.5c0 4.8-3 7.9-7 10.5-4-2.6-7-5.7-7-10.5V5.5z" />
+                <path d="M9 12l2.2 2.2L15.5 9.5" />
+              </svg>
+              <span className="text-[8.5px] font-medium text-shop-text text-center whitespace-nowrap">Secure Pay</span>
+            </div>
+
+            <div className="flex flex-col items-center gap-1.5 shrink-0 min-w-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 8.7l6.1-.6z" />
+              </svg>
+              <span className="text-[8.5px] font-medium text-shop-text text-center whitespace-nowrap">Quality Checked</span>
+            </div>
+          </div>
+        )}
+
+        {popularProducts.length > 0 && !activeCategoryId && !activeKeyword && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-1">
+              <ScribbleHeading variant="alt" className="font-shop-display text-xl font-bold text-shop-text block">
+                Popular Right Now
+              </ScribbleHeading>
+              <Link to="/popular" className="text-sm font-semibold text-shop-primary hover:text-shop-primary-dark transition shrink-0">
+                See all →
+              </Link>
+            </div>
+            <p className="text-sm text-shop-highlight mb-4">What people are picking up today</p>
+
+            <div className="relative">
+              <button
+                onClick={() => scrollPopular('left')}
+                className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md items-center justify-center text-shop-text hover:bg-shop-bg transition"
+              >
+                ‹
+              </button>
+
+              <div
+                ref={popularScrollRef}
+                className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {popularProducts.slice(0, 12).map((product) => (
+                  <div key={product.id} className="shrink-0 w-[42%] md:w-[190px] snap-start">
+                    <PopularProductCard product={product} />
                   </div>
-                )}
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollPopular('right')}
+                className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white shadow-md items-center justify-center text-shop-text hover:bg-shop-bg transition"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        )}
+
+        {needBanners.length > 0 && !activeCategoryId && !activeKeyword && (
+          <div className="mb-8">
+            <div>
+              <ScribbleHeading variant="alt" className="font-shop-display text-xl font-bold text-shop-text block">
+                Shop By Need
+              </ScribbleHeading>
+              <p className="text-sm text-shop-highlight mt-1">Find everything for what you're working on.</p>
+            </div>
+
+            <div className="relative mt-4">
+              <button
+                onClick={() => scrollNeeds('left')}
+                className="hidden md:flex absolute -left-3 top-[40%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md items-center justify-center text-shop-text hover:bg-shop-bg transition"
+              >
+                ‹
+              </button>
+
+              <div
+                ref={needScrollRef}
+                className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {needBanners.map((need, idx) => {
+                  const accent = NEED_ACCENTS[idx % NEED_ACCENTS.length];
+                  return (
+                    <button
+                      key={need.id}
+                      onClick={() => handleBannerClick(need)}
+                      className="shrink-0 w-[70%] md:w-[260px] h-[280px] md:h-[320px] snap-start text-left bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition group flex flex-col"
+                    >
+                      <div className="h-40 md:h-48 overflow-hidden shrink-0">
+                        <img
+                          src={need.imageUrl}
+                          alt={need.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      </div>
+                      <div className="p-4 flex flex-col flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span
+                            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${accent}1A` }}
+                          >
+                            <NeedIcon name={getNeedIcon(need.title)} color={accent} />
+                          </span>
+                          <h3 className="font-shop-display font-bold text-sm text-shop-text leading-tight line-clamp-2">
+                            {need.title}
+                          </h3>
+                        </div>
+                        {need.subtitle && (
+                          <p className="text-xs text-shop-highlight leading-relaxed mb-3 line-clamp-2">
+                            {need.subtitle}
+                          </p>
+                        )}
+                        <span
+                          className="text-xs font-semibold inline-flex items-center gap-1 mt-auto"
+                          style={{ color: accent }}
+                        >
+                          {need.buttonText || 'Shop now'} →
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => scrollNeeds('right')}
+                className="hidden md:flex absolute -right-3 top-[40%] -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-md items-center justify-center text-shop-text hover:bg-shop-bg transition"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        )}
 
         {secondaryBanners.length > 0 && !activeCategoryId && !activeKeyword && (
           <div>

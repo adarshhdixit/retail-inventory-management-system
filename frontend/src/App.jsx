@@ -28,6 +28,7 @@ import Banners from './pages/Banners';
 import CategoriesPage from './pages/CategoriesPage';
 import HotSellingPage from './pages/HotSellingPage';
 import NewlyAddedPage from './pages/NewlyAddedPage';
+import PopularPage from './pages/PopularPage';
 
 function App() {
   return (
@@ -155,6 +156,7 @@ function App() {
               />
 
               <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/popular" element={<PopularPage />} />
             </Routes>
             <Footer />
           </BrowserRouter>
